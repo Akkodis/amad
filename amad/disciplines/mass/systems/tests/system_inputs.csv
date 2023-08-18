@@ -1,0 +1,25 @@
+﻿Parameter,Value,Unit,Description,Valid Ranges,Aerodynamics,Cost,OAD,Loads,Mass,Performance,Powerplant,Structure,Systems,Transverse,Notes
+a_control_surfaces,21.77,m*2,Total area of all flight control surfaces,,,,,,X,,,,,,Wing CS areas are eyeballed
+d_nacelle,2.06,m,Nacelle maximum diameter,,,,,,X,,,,,,
+delta_wing_sweep,25.02,deg,Wing sweep,,,,,,X,,,,,,Critical sizing parameter
+f_wing_var_sweep,0,,Wing variable sweep weight penalty factor,"[0., 1.]",,,,,X,,,,,,Used by FLOPS weight estimation method
+h_fuse,4.01,m,Maximum fuselage height,,,,,,X,,,,,,
+m_mto,79016,kg,Max.Takeoff Mass,,,,,,X,,,,,,Critical sizing parameter
+mach_mo,0.82,,"Mach, maximum operational",,,,,,X,,,,,,
+n_eng,2,,"Number of engines, total",,,,,,X,,,,,,
+n_eng_fuse,0,,Number of fuselage-mounted engines,,,,,,X,,,,,,
+n_flcr,2,,Number of Flight Crew,,,,,,X,,,,,,
+n_fuse,1,,Number of fuselages,,,,,,X,,,,,,
+n_pax,189,,Number of passengers (max),,,,,,X,,,,,,
+n_pax_f,0,,Number of F class passengers (First),,,,,,X,,,,,,
+n_pax_j,0,,Number of J class passengers (Business),,,,,,X,,,,,,
+n_pax_y,189,,Number of Y class passengers (Economy),,,,,,X,,,,,,
+p_hydraulic,20684000,Pa,Hydraulic system pressure,,,,,,X,,,,,,
+w_fuse,3.76,m,Maximum fuselage width,,,,,,X,,,,,,
+x_cabin,30.02,m,Cabin length,,,,,,X,,,,,,
+x_fuse,38.08,m,Total Fuselage Length,,,,,,X,,,,,,
+x_range,7408000,m,Design range,,,,,,X,,,,,,
+x_wing_span,34.32,m,Wing span,,,,,,X,,,,,,
+m_fuel,21000,kg,Fuel capacity,,,,,,X,,,,,,
+r_wing_taper,0.271,,Wing taper ratio(s),,,,,,X,,,,,,
+chord_wing_root,7.88,m,Wing root chord,,,,,,X,,,,,,

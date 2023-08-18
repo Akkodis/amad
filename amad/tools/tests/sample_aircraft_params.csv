@@ -1,0 +1,12 @@
+﻿Parameter,Value,Unit,Description,Valid Ranges,Aerodynamics,Cost,OAD,Loads,Mass,Performance,Powerplant,Structure,Systems,Transverse,Notes
+Global Aircraft Dimensions,,,,,,,,,,,,,,,
+x_fuse,34.5,m,Total Fuselage Length,,,,,,,,,,,,
+w_fuse,2.76,m,Maximum fuselage width,,,,,,,,,,,,
+h_fuse,2.02,m,Maximum fuselage height,,,,X,,,,,,,,
+a_cabin,,m²,Cabin area,,,,,,,,,,,,
+x_cabin,,m,Cabin length,,,,,,,,,,,,
+,,,,,,,,,,,,,,,
+General Aircraft Parameters,,,,,,,,,,,,,,,
+n_flcr,2,-,Number of Flight Crew,,,,,,,,,,,,
+n_pax,84,-,Number of passengers (max),,,,,,,,,,,,
+n_fuse,1,-,Number of fuselages,,,,,,,,,,,,
