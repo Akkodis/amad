@@ -5,7 +5,7 @@ The optimization and multi dsisciplinary approach is based on the [CoSApp](https
 ## Implemented Disciplines
 - Aircraft Geometry
 - Aerodynamics
-- Aircradft Mass estimation (Raymer, Torenbeek)
+- Aircraft Mass estimation (Raymer, Torenbeek)
 - Turbofan Engine (Mattingly)
 - Mission Performance
 - Support Routines (ISA Atmosphere, Unit Conversions, etc.)
@@ -20,3 +20,30 @@ The optimization and multi dsisciplinary approach is based on the [CoSApp](https
 
 ## Example demo notebooks
 Example and demo jupyter notebooks for different subjects are available in the `amad/demo/notebooks` folder.
+
+## Installation example
+#### Create environment using Conda:
+`conda create -n amad pip git`
+<br>`conda activate amad`
+<br> CLone/Download AMAD repository: 
+<br>`git clone https://github.com/Akkodis/amad.git`
+
+#### Install libraries and dependencies:
+in folder containing `pyproject.toml` file: 
+<br>`python -m pip install .`
+<br>launch: `jupyter lab`
+
+## Contributors
+Peter CAIRNS
+<br> Rafael Rojas CARDENAS
+<br> André HOCHSCHULZ
+
+## Contact
+amad@akkodis.com
+
+
+
+
+
+ 
+sphinx- 
