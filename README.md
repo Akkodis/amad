@@ -1,7 +1,8 @@
+![AKKODIS](docs/source/akkodis.png)
 # AMAD - AKKODIS MDAO Aircraft Demonstrator ✈︎
-`AMAD` is a multi disciplinary design analysis and optimization (MDAO) tool kit for aircraft optimization.
+`AMAD` is a multidisciplinary design analysis and optimization (MDAO) tool kit for aircraft optimization.
 The initial version covers a conventional aircraft example.
-The optimization and multi dsisciplinary approach is based on the [CoSApp](https://gitlab.com/cosapp/cosapp) environment.
+The optimization and multidsisciplinary approach is based on the [CoSApp](https://gitlab.com/cosapp/cosapp) environment.
 ## Implemented Disciplines
 - Aircraft Geometry
 - Aerodynamics
@@ -11,8 +12,8 @@ The optimization and multi dsisciplinary approach is based on the [CoSApp](https
 - Support Routines (ISA Atmosphere, Unit Conversions, etc.)
 
 ## External optional dependencies
-- AVL for aero computation: https://web.mit.edu/drela/Public/web/avl/
-- XFOIL for airfoil computation: https://web.mit.edu/drela/Public/web/xfoil/
+- [AVL](https://web.mit.edu/drela/Public/web/avl) for aero computation
+- [XFOIL](https://web.mit.edu/drela/Public/web/xfoil) for airfoil computation
 
 ## Included Python Packages
 - AeroSandbox: https://github.com/peterdsharpe/AeroSandbox
@@ -21,17 +22,7 @@ The optimization and multi dsisciplinary approach is based on the [CoSApp](https
 ## Example demo notebooks
 Example and demo jupyter notebooks for different subjects are available in the `amad/demo/notebooks` folder.
 
-## Installation example
-#### Create environment using Conda:
-`conda create -n amad pip git`
-<br>`conda activate amad`
-<br> CLone/Download AMAD repository: 
-<br>`git clone https://github.com/Akkodis/amad.git`
 
-#### Install libraries and dependencies:
-in folder containing `pyproject.toml` file: 
-<br>`python -m pip install .`
-<br>launch: `jupyter lab`
 
 ## Contributors
 Peter CAIRNS
@@ -40,10 +31,3 @@ Peter CAIRNS
 
 ## Contact
 amad@akkodis.com
-
-
-
-
-
- 
-sphinx- 
