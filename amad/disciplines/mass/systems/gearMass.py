@@ -8,19 +8,44 @@ from amad.tools.unit_conversion import lb2kg, kg2lb, m2ft, m2in
 
 
 class FLOPS(AbstractMassComponent):
-    """FLOPS Gear Mass estimation method for various aircraft
+    """
+    FLOPS Gear Mass estimation method for various aircraft
 
-    Influencing Parameters:
-        type_aircraft
-        mach_cruise
-        m_mlw
-        m_mto
-        x_range
-        x_mlgoleo
-        x_nlgoleo
+    Parameters
+    ----------
+    type_aircraft : str
+        The type of the aircraft.
+    mach_cruise : float
+        The cruise Mach number.
+    m_mlw : float
+        The maximum landing weight.
+    m_mto : float
+        The maximum takeoff weight.
+    x_range : int
+        The range of the aircraft.
+    x_mlgoleo : int
+        The location of the main landing gear oleo.
+    x_nlgoleo : int
+        The location of the nose landing gear oleo.
     """
 
     def setup(self):
+        """
+        Set up the class with initial values.
+
+        Parameters
+        ----------
+        self : object
+            The object that needs to be set up.
+
+        Returns
+        -------
+        None
+
+        Raises
+        ------
+        None
+        """
         inward_list = [
             "type_aircraft",
             "mach_cruise",
@@ -43,11 +68,44 @@ class FLOPS(AbstractMassComponent):
         self.add_outward("m_lg")
 
     def lg_mass(self, k, xlg):
+        """
+        Calculate the mass of a large object.
+
+        Parameters
+        ----------
+        self : object
+            The object instance.
+        k : list or tuple
+            A list or tuple of four numbers representing the parameters for the mass calculation.
+        xlg : float
+            The value of the large object.
+
+        Returns
+        -------
+        float
+            The mass of the large object.
+        """
         m_lg = (k[0] - (k[1] * self.dfte)) * (self.wldg ** k[2]) * (xlg ** k[3])
         return m_lg
 
     def compute_mass(self):
         # calculate intermediates
+        """
+        Calculate the mass of an aircraft.
+
+        Parameters
+        ----------
+        self : object
+            The aircraft object.
+
+        Returns
+        -------
+        None
+
+        Raises
+        ------
+        None
+        """
         self.dfte = 1.0 if self.type_aircraft == "fighter" else 0.0
         self.rfact = 4e-5 if self.mach_cruise >= 1.0 else 9e-5
 
@@ -69,17 +127,52 @@ class FLOPS(AbstractMassComponent):
 
 
 class Torenbeek(AbstractMassComponent):
-    """Torenbeek Gear estimation method for transport aircraft
+    """
+    Torenbeek Gear estimation method for transport aircraft
 
-    Influencing Parameters:
-        m_mto
-        tech_highwing
-        tech_retractable
-        type_aircraft
-        tech_tail_gear
+    Parameters
+    ----------
+    m_mto : float
+        Mass of the aircraft at takeoff.
+
+    tech_highwing : bool
+        True if the aircraft has a high-wing configuration, False otherwise.
+
+    tech_retractable : bool
+        True if the aircraft has retractable gear, False otherwise.
+
+    type_aircraft : str
+        Type of the aircraft.
+
+    tech_tail_gear : bool
+        True if the aircraft has a tail gear, False otherwise.
     """
 
     def setup(self):
+        """
+        Set up the class object with initial values.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
+
+        Notes
+        -----
+        This function should be called before using any other functions of the class.
+
+        References
+        ----------
+        [1] Class documentation: https://example.com/class-documentation
+
+        Examples
+        --------
+        >>> obj = ClassName()
+        >>> obj.setup()
+        """
         inward_list = [
             "m_mto",
             "tech_highwing",
@@ -125,6 +218,25 @@ class Torenbeek(AbstractMassComponent):
         self.add_outward("m_lg")
 
     def lg_mass(self, k, m_mto, A, B, C, D):
+        """
+        Calculate the mass of the liquid/gas mixture.
+
+        Parameters
+        ----------
+        self : object
+            The object on which this method is called.
+        k : float
+            Coefficient for the term (A + B * m_mto ** 0.75).
+        m_mto : float
+            The mass of the mixture.
+        A, B, C, D : float
+            Coefficients used in the calculation.
+
+        Returns
+        -------
+        float
+            The mass of the liquid/gas mixture.
+        """
         m_lg = (
             k * ((A + (B * (m_mto**0.75)))) + (C * m_mto) + (D * (m_mto ** (3 / 2)))
         )
@@ -132,6 +244,22 @@ class Torenbeek(AbstractMassComponent):
 
     def compute_mass(self):
         # unit conversions
+        """
+        Compute the mass of an aircraft.
+
+        Parameters
+        ----------
+        self : object
+            The object on which the method is called.
+
+        Returns
+        -------
+        None
+
+        Raises
+        ------
+        None
+        """
         m_mto = kg2lb(mass=self.m_mto)
 
         # calculate intermediates
@@ -177,29 +305,53 @@ class Torenbeek(AbstractMassComponent):
 
 
 class GearMass(BaseMassClass):
-    """Landing Gear Mass model
+    """
+    Landing Gear Mass model
 
-    Constructor arguments:
-    ----------------------
-    - name [str]: System name
-    - model [str]: Computation algorithm. Options are:
-        - torenbeek: Egbeert Torenbeek
-        - flops: NASA FLOPS
-        - specified: User-specified mass
+    Parameters
+    ----------
+    name : str
+        System name
+    model : str
+        Computation algorithm. Options are:
+            - torenbeek: Egbeert Torenbeek
+            - flops: NASA FLOPS
+            - specified: User-specified mass
 
-    Children:
-    ---------
-    - model:
+    Children
+    --------
+    model : AbstractMassComponent
         Concrete specialization of `AbstractMassComponent`.
         May possess model-specific parameters, as inwards.
     """
 
     def setup(self, model: str, **parameters):
+        """
+        Setup the model with the specified parameters.
+
+        Parameters
+        ----------
+        model : str
+            The name of the model to set up.
+
+        **parameters : keyword arguments
+            Additional parameters for setting up the model.
+
+        Raises
+        ------
+        None
+
+        Returns
+        -------
+        None
+        """
         super().setup(model=model, **parameters)
 
     @classmethod
     def models(cls) -> Dict[str, type]:
-        """Dictionary of available models"""
+        """
+        Dictionary of available models
+        """
         return {
             "torenbeek": Torenbeek,
             "flops": FLOPS,

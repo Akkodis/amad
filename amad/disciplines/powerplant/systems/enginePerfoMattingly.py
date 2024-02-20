@@ -11,6 +11,85 @@ class EnginePerfoMattingly(System):
 
     def setup(self, altitude=0.0, dISA=0.0):
         # free variables
+        """
+        Set up the parameters for calculating various properties related to engine performance and aircraft conditions.
+
+        Parameters
+        ----------
+        altitude : float, optional
+            The altitude at which the calculations will be performed, in meters.
+            Default is 0.0.
+        dISA : float, optional
+            The delta ISA (International Standard Atmosphere) temperature, in Kelvin.
+            Default is 0.0.
+
+        Variables
+        ---------
+        z_altitude : float
+            Altitude value.
+            Unit: meters
+            Description: Altitude
+        thrust_eng : float
+            Maximum thrust value.
+            Unit: Newtons
+            Description: Maximum given thrust
+        temp_delta_ISA : float
+            Delta ISA temperature value.
+            Unit: Kelvin
+            Description: delta ISA temperature
+        mach_current : float
+            Current Mach number of the aircraft.
+            Unit: None
+            Description: Mach, current aircraft
+        rating_eng : str
+            Current engine rating.
+            Description: Current Engine Rating
+        anti_ice : str
+            Current anti-ice setting.
+            Description: Current Anti-Ice setting
+        air_cond : str
+            Current air conditioning setting.
+            Description: Current Air Conditioning setting
+        f_eng_efficiency : float
+            Engine efficiency factor.
+            Description: Engine efficiency factor
+
+        Properties
+        ----------
+        thr_reduction : float
+            Thrust reduction value.
+        model_coeffs : dict
+            Model coefficients.
+        sfc_coeffs : dict
+            Specific fuel consumption coefficients.
+        rating_factors : dict
+            Rating factors.
+        anti_ice_bleed_reductions : dict
+            Anti-ice bleed reductions.
+        air_cond_bleed_reductions : dict
+            Air conditioning bleed reductions.
+        atmos_ISA : AtmosphereAMAD
+            Instance of AtmosphereAMAD class for ISA calculations.
+        temp_SL_ISA : float
+            Temperature at sea level for ISA conditions.
+        temp_SL_ISA_DEGC : float
+            Temperature at sea level for ISA conditions, in degrees Celsius.
+
+        Outward Variables
+        -----------------
+        THR : -
+        THR_Mattingly : -
+        SFC : -
+        THR_Mattingly_max : -
+
+        Returns
+        -------
+        None
+
+        Note
+        ----
+        This function sets up the necessary parameters and properties for subsequent calculations related to engine performance and aircraft conditions.
+        """
         self.add_inward("z_altitude", altitude, unit="m", desc="Altitude")
         self.add_inward("thrust_eng", 121000.0, unit="N", desc="Maximum given thrust")
         self.add_inward("temp_delta_ISA", dISA, unit="K", desc="delta ISA temperature")
@@ -57,6 +136,28 @@ class EnginePerfoMattingly(System):
         self.add_outward("THR_Mattingly_max")
 
     def compute(self):
+        """
+        Compute the thrust and specific fuel consumption (SFC) for an aircraft engine.
+
+        This function calculates the thrust and SFC based on various inputs such as altitude,
+        temperature, density, engine ratings, and coefficients. The thrust is determined using
+        the Mattingly thrust equation, which takes into account altitude, temperature deviation
+        from ISA, Mach number, and model coefficients. The SFC is calculated using a combination of Mach number,
+        temperature deviation from standard lapse rate, engine efficiency, and specific fuel consumption coefficients.
+
+        Parameters
+        ----------
+        self : object
+            An instance of the class containing the function.
+
+        Returns
+        -------
+        None
+
+        Raises
+        ------
+        None
+        """
         altitude_ft = m2ft(self.z_altitude)
 
         # dISA-specific properties

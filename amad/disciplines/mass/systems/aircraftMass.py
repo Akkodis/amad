@@ -15,11 +15,30 @@ from amad.disciplines.mass.systems import (
 
 
 class AircraftMass(System):
-    """This system calculates the total mass of the aircraft.
+    """
+    This system calculates the total mass of the aircraft.
     Models are hard-coded for the moment so there are no arguments
     """
 
     def setup(self):
+        """
+        Set up the object with initial values and relationships.
+
+        This function sets up the object by creating a list of different mass models, initializing various attributes, and defining relationships between different models. 
+
+        Parameters
+        ----------
+        self : object
+            The object being set up.
+
+        Returns
+        -------
+        None
+
+        Raises
+        ------
+        None
+        """        
         model_list = [
             WingMass(name="wing", model="torenbeek"),
             EmpennageMass(name="tail", model="torenbeek"),
@@ -47,6 +66,36 @@ class AircraftMass(System):
 
     def compute(self):
         # fuel mass
+        """
+        Compute the mass and weight distributions for a vehicle.
+
+        Attributes
+        ----------
+        m_fuel : float
+            The mass of the fuel.
+        structure_mass : float
+            The total mass of the structure.
+        powerplant_mass : float
+            The mass of the powerplant.
+        systems_mass : float
+            The mass of the systems.
+        payload_mass : float
+            The mass of the payload.
+        completion_mass : float
+            The mass of the completion.
+        total_mass : float
+            The total mass of the vehicle.
+        m_zfw : float
+            The zero fuel weight of the vehicle.
+
+        Returns
+        -------
+        None
+
+        Raises
+        ------
+        None
+        """        
         self.m_fuel = self.m_fuel_out
 
         # calculate mass totals

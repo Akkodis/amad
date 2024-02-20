@@ -8,6 +8,88 @@ from amad.disciplines.aerodynamics.systems import AeroCalculateAVL
 
 
 class CrzEquiPoint(System):
+    """
+    A class representing a system for calculating the equilibrium point of a CRZ aircraft.
+    
+    Parameters
+    ----------
+    asb_aircraft_geometry : dict
+        A dictionary containing the aircraft geometry parameters.
+    aero_calculator : object, optional
+        An instance of the AeroCalculateAVL class used for aerodynamic calculations.
+        Default is AeroCalculateAVL.
+    option_optimization : bool, optional
+        A boolean indicating whether optimization should be enabled or not.
+        Default is True.
+    kwargs : dict
+        Additional keyword arguments.
+
+    Attributes
+    ----------
+    m_mto : float
+        The mass of the aircraft at takeoff.
+    m_fuel_cruise : float
+        The mass of fuel during cruise.
+    geom_in : AsbGeomPort object
+        The input for the aircraft geometry.
+    aero_calculator : object
+        An instance of the AeroCalculateAVL class used for aerodynamic calculations.
+    n_alpha_samples : int
+        The number of alpha samples to use in calculations.
+    range_alpha : int
+        The range of alpha values to use in calculations.
+    phi_thrust_eng : float
+        The inclination angle of the aircraft's engines.
+    mach_current : float or list
+        The current Mach number of the aircraft.
+    z_altitude : int, float, or list
+        The altitude of the aircraft.
+    lift_int : scipy.interpolate.interp1d
+        An interpolated function for lift.
+    drag_int : scipy.interpolate.interp1d
+        An interpolated function for drag.
+    cl_int : scipy.interpolate.interp1d
+        An interpolated function for lift coefficient.
+    cd_int : scipy.interpolate.interp1d
+        An interpolated function for drag coefficient.
+    thrust_required : float
+        The thrust required for the equilibrium point.
+    thrust_delta : float
+        The difference between horizontal and vertical thrust.
+    thrust_horizontal : float
+        The horizontal thrust component.
+    thrust_vertical : float
+        The vertical thrust component.
+    lift_aircraft : float
+        The lift at the equilibrium point.
+    drag_aircraft : float
+        The drag at the equilibrium point.
+    alpha_aircraft : float
+        The alpha value at the equilibrium point.
+    ac_weight_force : float
+        The weight force of the aircraft.
+    v_tas : float
+        The true airspeed of the aircraft.
+    cache : dict
+        A dictionary for caching calculation results.
+
+    Methods
+    -------
+    setup(asb_aircraft_geometry: dict, aero_calculator=AeroCalculateAVL, option_optimization=True, **kwargs)
+        Set up the system.
+    launch_avl_calc(min_alpha, max_alpha)
+        Launch AVL calculations for a range of alpha values.
+    clear_cache()
+        Clear the cache.
+    _calc_t_h(alpha)
+        Calculate the horizontal thrust component.
+    _calc_t_v(alpha)
+        Calculate the vertical thrust component.
+    _calc_thrust(alpha)
+        Calculate the total thrust.
+    compute()
+        Perform the computation for the equilibrium point.
+    """    
     def setup(
         self,
         asb_aircraft_geometry: dict,
@@ -15,6 +97,36 @@ class CrzEquiPoint(System):
         option_optimization=True,
         **kwargs,
     ):
+        """
+        Initialize the aircraft analysis setup.
+
+        Parameters
+        ----------
+        asb_aircraft_geometry : dict
+            Dictionary containing aircraft geometry data.
+        aero_calculator : class, optional
+            Aero calculator class to be used for analysis (default is AeroCalculateAVL).
+        option_optimization : bool, optional
+            Flag indicating whether optimization is enabled (default is True).
+        **kwargs : dict
+            Additional keyword arguments.
+
+        Returns
+        -------
+        None
+
+        Notes
+        -----
+        This method initializes the aircraft analysis setup by:
+        - Adding inward and input properties related to aircraft mass, fuel, geometry, etc.
+        - Initializing the aero calculator.
+        - Adding properties related to alpha samples, alpha range, etc.
+        - Adding inward properties related to engine inclination angle, Mach number, altitude, etc.
+        - Adding outward properties related to lift, drag, CL, CD, thrust, etc.
+        - Adding cache property.
+
+        All properties are added to the setup object.
+        """        
         self.add_inward("m_mto", 1, unit="kg")
         self.add_inward("m_fuel_cruise", 0, unit="kg")
         self.add_input(AsbGeomPort, "geom_in")
@@ -59,6 +171,30 @@ class CrzEquiPoint(System):
         self.add_outward("cache", {})  # cache object to store lift/drag polars
 
     def launch_avl_calc(self, min_alpha, max_alpha):
+        """
+        Calculate the lift, drag, lift coefficient, drag coefficient, and alpha_aircraft values for a given range of alpha values.
+
+        Parameters
+        ----------
+        min_alpha : float
+            The minimum alpha value.
+        max_alpha : float
+            The maximum alpha value.
+
+        Returns
+        -------
+        tuple
+            A tuple containing the following values:
+            - L: The lift.
+            - D: The drag.
+            - CL: The lift coefficient.
+            - CD: The drag coefficient.
+            - alpha_aircraft: The alpha values.
+
+        Raises
+        ------
+        None
+        """        
         sac = self.aero_calculator
         sac.alpha_aircraft = list(
             numpy.linspace(min_alpha, max_alpha, num=self.n_alpha_samples)
@@ -72,11 +208,58 @@ class CrzEquiPoint(System):
         return sac.L, sac.D, sac.CL, sac.CD, sac.alpha_aircraft
 
     def clear_cache(self):
+        """
+        Clear the cache.
+
+        This method clears the cache of the object.
+
+        Parameters
+        ----------
+        self : object
+            The object on which the method is called.
+
+        Returns
+        -------
+        None
+
+        Raises
+        ------
+        None
+        """        
         self.cache.clear()
 
     def _calc_t_h(self, alpha):
         # horizontal force calculation
         # compute angles
+        """
+        Calculate the horizontal thrust component.
+
+        Parameters
+        ----------
+        self : object
+            The instance of the class.
+        alpha : float
+            The angle of attack in degrees.
+
+        Returns
+        -------
+        float
+            The horizontal thrust component.
+
+        Raises
+        ------
+        None
+
+        Notes
+        -----
+        This function internally calls the `lift_int` and `drag_int` methods from the class.
+
+        The angle `alpha` is converted to radians before further calculations.
+
+        The horizontal thrust component is calculated using the lift and drag coefficients, as well as the angle of attack.
+
+        This function assumes that the instance has attributes `phi_thrust_eng` (the angle of the thrust engine in degrees), `lift_int` (method to calculate the lift coefficient), and `drag_int` (method to calculate the drag coefficient).
+        """        
         alpha_rad = math.radians(alpha)
         angle_thrust_rad = math.radians(self.phi_thrust_eng) + alpha_rad
 
@@ -91,6 +274,30 @@ class CrzEquiPoint(System):
     def _calc_t_v(self, alpha):
         # vertical force calculation
         # compute angles
+        """
+        Calculate the thrust-to-weight ratio for a given angle of attack.
+
+        Parameters
+        ----------
+        alpha : float
+            The angle of attack in degrees.
+
+        Returns
+        -------
+        float
+            The thrust-to-weight ratio.
+
+        Notes
+        -----
+        This method assumes that `alpha` is given in degrees and converts it to radians using `math.radians`.
+
+        The thrust-to-weight ratio (`t_v`) is calculated using the formula:
+        t_v = (drag_int(alpha) * sin(alpha_rad) + ac_weight_force - lift_int(alpha) * cos(alpha_rad)) / sin(angle_thrust_rad)
+
+        Raises
+        ------
+        None
+        """        
         alpha_rad = math.radians(alpha)
         angle_thrust_rad = math.radians(self.phi_thrust_eng) + alpha_rad
 
@@ -104,10 +311,41 @@ class CrzEquiPoint(System):
         return t_v
 
     def _calc_thrust(self, alpha):
+        """
+        Calculate the thrust difference between horizontal and vertical components.
+
+        Parameters
+        ----------
+        alpha : float
+            The angle of attack in degrees.
+
+        Returns
+        -------
+        float
+            The thrust difference.
+        """        
         return self._calc_t_h(alpha) - self._calc_t_v(alpha)
 
     def compute(self):
         # send incoming geometry to aero calc
+        """
+        Compute various aerodynamic parameters for an aircraft.
+
+        Raises
+        ------
+        ValueError
+            If an error occurs during the computation.
+
+        Notes
+        -----
+        This function performs multiple calculations and assignments to various attributes of the `self` object. It updates the `aero_calculator`, `ac_weight_force`, `lift_int`, `drag_int`, `cl_int`, `cd_int`, `thrust_required`, `thrust_delta`, `thrust_horizontal`, `thrust_vertical`, `lift_aircraft`, `drag_aircraft`, and `alpha_aircraft` attributes.
+
+        This function uses the `geom_in`, `m_mto`, `m_fuel_cruise`, `phi_thrust_eng`, `mach_current`, `z_altitude`, `range_alpha`, `_calc_thrust`, `_calc_t_h`, `_calc_t_v`, `launch_avl_calc`, `interp1d`, `bounds_error`, `cache`, `v_tas`, `optimize`, `brentq`, and `nan` attributes from the `self` object.
+
+        The computation involves setting the `ac_weight_force` attribute, calculating a checksum with `zlib.adler32`, caching and retrieving values from the `cache` dictionary, interpolating values with `interp1d`, optimizing using `brentq`, and assigning various attributes.
+
+        This function is specifically designed for use in conjunction with certain attributes and methods. It may raise a `ValueError` if an exception occurs during the computation.
+        """        
         self.aero_calculator.geom_in.asb_aircraft_geometry = (
             self.geom_in.asb_aircraft_geometry
         )

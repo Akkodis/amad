@@ -6,11 +6,30 @@ from amad.tools.pullingFilter import pulling_filter
 
 
 class CalculateAircraft(System):
-    def setup(self, airplane_geom: dict):
-        """Setup of CalculateAircraft
+    """
+    A class representing a CalculateAircraft system.
 
-        Args:
-            airplane_geom (dict): aircraft geometry dict
+    Parameters
+    ----------
+    airplane_geom : dict
+        A dictionary representing the aircraft geometry.
+
+    Methods
+    -------
+    setup(airplane_geom)
+        Sets up the CalculateAircraft system with the given aircraft geometry.
+
+    compute()
+        Computes the mass of the aircraft during cruise.
+    """
+    def setup(self, airplane_geom: dict):
+        """
+        Setup of CalculateAircraft
+
+        Parameters
+        ----------
+        airplane_geom : dict
+            Aircraft geometry dictionary.
         """
         model_list = [
             GenerateAeroGeom("ac_geom"),
@@ -39,6 +58,26 @@ class CalculateAircraft(System):
         # self.connect(self.mass, self.cruise_fuel, {'mtow': 'm_gross'})
 
     def compute(self):
+        """
+        Compute the fuel mass for cruising.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
+
+        Modifies
+        --------
+        self.mass.m_fuel_cruise : float
+            The fuel mass for cruising.
+
+        Notes
+        -----
+        This function sets the value of self.mass.m_fuel_cruise based on the value of self.cruise_fuel.m_fuel_cruise.mass.
+        """
         self.mass.m_fuel_cruise = self.cruise_fuel.m_fuel_cruise.mass
         # self.cruise_fuel.equi.m_fuel_cruise = self.cruise_fuel.m_fuel_cruise.mass
 
@@ -51,10 +90,13 @@ if __name__ == "__main__":
     from amad.optimization.resources.set_parameters import single_aisle_concept
 
     def print_msg(ac_sys):
-        """Print Routine
+        """
+        Print Routine
 
-        Args:
-            ac_sys (obj): summary of aircradft parameters
+        Parameters
+        ----------
+        ac_sys : obj
+            Summary of aircraft parameters.
         """
         msg = (
             f"Span = {ac_sys.x_wing_span[1]}m, "

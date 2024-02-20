@@ -3,247 +3,347 @@ from typing import Union
 
 # temperature conversion
 def k2degc(temperature: Union[float, int]):
-    """Temperature conversion Kelvin to DEG C
+    """
+    Temperature conversion Kelvin to DEG C
 
-    Args:
-        temperature (Union[float, int]): temperature [K]
+    Parameters
+    ----------
+    temperature : Union[float, int]
+        temperature [K]
 
-    Returns:
-        float: Temperature [DEG C]
+    Returns
+    -------
+    float
+        Temperature [DEG C]
     """
     return temperature - 273.15
 
 
 def degc2k(temperature: Union[float, int]):
-    """Temperature conversion DEG C to Kelvin
+    """
+    Temperature conversion DEG C to Kelvin
 
-    Args:
-        temperature (Union[float, int]): temperature [DEG C]
+    Parameters
+    ----------
+    temperature : Union[float, int]
+        temperature [DEG C]
 
-    Returns:
-        float: temperature [K]
+    Returns
+    -------
+    float
+        temperature [K]
     """
     return temperature + 273.15
 
 
 # mass conversions
 def lb2kg(mass: Union[float, int]):
-    """mass conversion from lbs to kg
+    """
+    mass conversion from lbs to kg
 
-    Args:
-        mass (Union[float, int]): mass [lbs]
+    Parameters
+    ----------
+    mass : Union[float, int]
+        mass in lbs
 
-    Returns:
-        float: mass [kg]
+    Returns
+    -------
+    float
+        mass in kg
     """
     return mass * 0.453592
 
 
 def kg2lb(mass: Union[float, int]):
-    """mass conversion from kg to lbs
+    """
+    mass conversion from kg to lbs
 
-    Args:
-        mass (Union[float, int]): mass [kg]
+    Parameters
+    ----------
+    mass : Union[float, int]
+        The mass in kilograms.
 
-    Returns:
-        float: mass [lbs]
+    Returns
+    -------
+    float
+        The mass in pounds.
     """
     return mass / 0.453592
 
 
 # area conversions
 def sqm2sqft(area: Union[float, int]):
-    """conversion from square meter to square feet
+    """
+    conversion from square meter to square feet
 
-    Args:
-        area (Union[float, int]): area [m**2]
+    Parameters
+    ----------
+    area : Union[float, int]
+        Area in square meters.
 
-    Returns:
-        float: area [ft**2]
+    Returns
+    -------
+    float
+        Area in square feet.
     """
     return area * 10.7639
 
 
 def sqft2sqm(area: Union[float, int]):
-    """conversion from suqre feet to square meter
+    """
+    Conversion from square feet to square meters.
 
-    Args:
-        area (Union[float, int]): area [ft**2]
+    Parameters
+    ----------
+    area : Union[float, int]
+        The area in square feet.
 
-    Returns:
-        float: area [m**2]
+    Returns
+    -------
+    float
+        The area in square meters.
     """
     return area * 0.092903
 
 
 # length conversions
 def m2ft(length: Union[float, int]):
-    """meter to feet conversion
+    """
+    Meter to feet conversion.
 
-    Args:
-        length (Union[float, int]): length [m]
+    Parameters
+    ----------
+    length : Union[float, int]
+        The length in meters.
 
-    Returns:
-        float: length [ft]
+    Returns
+    -------
+    float
+        The length in feet.
     """
     return length * 3.28084
 
 
 def ft2m(length: Union[float, int]):
-    """feet to meter conversion
+    """
+    feet to meter conversion
 
-    Args:
-        length (Union[float, int]): length [ft]
+    Parameters
+    ----------
+    length : float or int
+        Length in feet.
 
-    Returns:
-        float: length [m]
+    Returns
+    -------
+    float
+        Length in meters.
     """
     return length / 3.28084
 
 
 def m2in(length: Union[float, int]):
-    """meter to inch conversion
+    """
+    meter to inch conversion
 
-    Args:
-        length (Union[float, int]): length [m]
+    Parameters
+    ----------
+    length : Union[float, int]
+        The length in meters.
 
-    Returns:
-        float: length [in]
+    Returns
+    -------
+    float
+        The length in inches.
     """
     return length * (12 * 3.28084)
 
 
 def in2m(length: Union[float, int]):
-    """in to meter conversion
+    """
+    in to meter conversion
 
-    Args:
-        length (Union[float, int]): length [in]
+    Parameters
+    ----------
+    length : Union[float, int]
+        Length in [in]
 
-    Returns:
-        float: length [m]
+    Returns
+    -------
+    float
+        Length in [m]
     """
     return length / (12 * 3.28084)
 
 
 def m2nm(length: Union[float, int]):
-    """Meter to Nautical Miles conversion
+    """
+    Meter to Nautical Miles conversion.
 
-    Args:
-        length (Union[float, int]): length [m]
+    Parameters
+    ----------
+    length : Union[float, int]
+        Length in meters.
 
-    Returns:
-        float: length [NM]
+    Returns
+    -------
+    float
+        Length in nautical miles.
     """
     return length / 1852
 
 
 def nm2m(length: Union[float, int]):
-    """nautical miles to meter conversion
+    """
+    Nautical miles to meter conversion
 
-    Args:
-        length (Union[float, int]): length [NM]
+    Parameters
+    ----------
+    length : Union[float, int]
+        Length in nautical miles [NM].
 
-    Returns:
-        float: length [m]
+    Returns
+    -------
+    float
+        Length in meters [m].
     """
     return length * 1852
 
 
 # speed conversions
 def ms2kt(speed: Union[float, int]):
-    """Speed conversion from m/s to kt
+    """
+    Speed conversion from m/s to kt.
 
-    Args:
-        speed (Union[float, int]): speed [m/s]
+    Parameters
+    ----------
+    speed : Union[float, int]
+        The speed in meters per second [m/s].
 
-    Returns:
-        float: speed [kt]
+    Returns
+    -------
+    float
+        The speed in knots [kt].
     """
     return speed * 1.94384
 
 
 def kt2ms(speed: Union[float, int]):
-    """Speed conversion from kt to m/s
+    """
+    Speed conversion from kt to m/s
 
-    Args:
-        speed (Union[float, int]): speed [kt]
+    Parameters
+    ----------
+    speed : Union[float, int]
+        Speed in knots [kt]
 
-    Returns:
-        float: speed [m/s]
+    Returns
+    -------
+    float
+        Speed in meters per second [m/s]
     """
     return speed / 1.94384
 
 
 def ftm2ms(speed: Union[float, int]):
-    """Speed conversion from ft/min to m/s
+    """
+    Speed conversion from ft/min to m/s
 
-    Args:
-        speed (Union[float, int]): speed [ft/min]
+    Parameters
+    ----------
+    speed : Union[float, int]
+        Speed in ft/min
 
-    Returns:
-        float: speed [m/s]
+    Returns
+    -------
+    float
+        Speed in m/s
     """
     return speed * 0.00508
 
 
 def ms2ftm(speed: Union[float, int]):
-    """Speed conversion from m/s to ft/min
+    """
+    Speed conversion from m/s to ft/min
 
-    Args:
-        speed (Union[float, int]): speed [m/s]
+    Parameters
+    ----------
+    speed : Union[float, int]
+        speed [m/s]
 
-    Returns:
-        float: speed [ft/min]
+    Returns
+    -------
+    float
+        speed [ft/min]
     """
     return speed / 0.00508
 
 
 # force conversions
 def n2lb(force: Union[float, int]):
-    """Force conversion from Newton to lbf
+    """
+    Force conversion from Newton to lbf
 
-    Args:
-        force (Union[float, int]): force [N]
+    Parameters
+    ----------
+    force : Union[float, int]
+        force [N]
 
-    Returns:
-        float: force [lbf]
+    Returns
+    -------
+    float
+        force [lbf]
     """
     return force * 0.2248089431
 
 
 def lb2n(force: Union[float, int]):
-    """Force conversion from lbf to N
+    """
+    Force conversion from lbf to N.
 
-    Args:
-        force (Union[float, int]): force [lbf]
+    Parameters
+    ----------
+    force : Union[float, int]
+        The force in pounds force (lbf).
 
-    Returns:
-        float: force [N]
+    Returns
+    -------
+    float
+        The force in newtons (N).
     """
     return force / 0.2248089431
 
 
 # pressure conversions
 def pa2psi(pressure: Union[float, int]):
-    """Pressure conversion from Pascal to PSI
+    """
+    Pressure conversion from Pascal to PSI
 
-    Args:
-        pressure (Union[float, int]): pressure [Pa]
+    Parameters
+    ----------
+    pressure : Union[float, int]
+        pressure [Pa]
 
-    Returns:
-        float: pressure [psi]
+    Returns
+    -------
+    float
+        pressure [psi]
     """
     return pressure / 6894.76
 
 
 def psi2pa(pressure: Union[float, int]):
-    """Pressure conversion from PSI to Pascal
+    """
+    Pressure conversion from PSI to Pascal
 
-    Args:
-        pressure (Union[float, int]): pressure [psi]
+    Parameters
+    ----------
+    pressure : Union[float, int]
+        pressure [psi]
 
-    Returns:
-        float: pressure [Pa]
+    Returns
+    -------
+    float
+        pressure [Pa]
     """
     return pressure * 6894.76
 

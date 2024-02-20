@@ -6,7 +6,50 @@ from amad.tools.unit_conversion import lb2n, ft2m, lb2kg
 
 @pytest.fixture
 def factory():
+    """
+    Return a factory function that creates a NacelleMass object.
+
+    Parameters
+    ----------
+    model : str
+        The model of the NacelleMass object.
+    tech_center_eng : float
+        The tech center of the engine.
+    r_bypass : float
+        The bypass ratio.
+
+    Returns
+    -------
+    callable
+        A factory function that creates a NacelleMass object.
+
+    Raises
+    ------
+    None
+    """
     def factory_impl(model, tech_center_eng, r_bypass):
+        """
+        Create a NacelleMass object with specified parameters.
+
+        Parameters
+        ----------
+        model : str
+            The name of the model for the NacelleMass object.
+        tech_center_eng : float
+            The technical center of the engine.
+        r_bypass : float
+            The bypass ratio.
+
+        Returns
+        -------
+        NacelleMass
+            The created NacelleMass object with the specified parameters.
+
+        Raises
+        ------
+        KeyError
+            If a parameter is not found in the parameters dictionary.
+        """
         syst = NacelleMass(name="nacmass", model=model)
 
         parameters = {
@@ -44,6 +87,31 @@ def test_NacMass_run_once(
     tech_center_eng,
     r_bypass,
 ):
+    """
+    Test the `run_once()` method of the NacMass class.
+
+    Parameters
+    ----------
+    factory : function
+        A factory function that creates an instance of the NacMass class.
+    model : str
+        The model to use for creating the NacMass instance.
+    expected_nac_mass : float
+        The expected NacMass value in pounds.
+    tech_center_eng : str
+        A string representing whether tech center engineering is used.
+    r_bypass : float
+        The value of the R bypass parameter.
+
+    Returns
+    -------
+    None
+
+    Raises
+    ------
+    AssertionError
+        If the resulting NacMass value is not equal to the expected value.
+    """
     nac = factory(model, tech_center_eng, r_bypass)
     nac.run_once()
     print(nac.to_json())
@@ -52,7 +120,9 @@ def test_NacMass_run_once(
 
 
 def test_NacMass_models():
-    """Test available model dictionary"""
+    """
+    Test available model dictionary
+    """
     models = NacelleMass.models()
     assert list(models) == [
         "torenbeek",

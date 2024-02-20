@@ -17,7 +17,53 @@ from amad.optimization.resources.set_parameters import single_aisle_concept
 
 
 class OptimizeAircraftMass(System):
+    """
+    A class representing an optimization of aircraft mass.
+
+    Methods
+    -------
+    setup()
+        Sets up the optimization model.
+    compute()
+        Performs the computation for the optimization model.
+
+    Attributes
+    ----------
+    model_list : list
+        A list of models used in the optimization.
+    exceptions : list
+        A list of exceptions for pulling.
+    ac_geom : class
+        The generated aerodynamic geometry of the aircraft.
+    mass : class
+        The mass of the aircraft.
+    cruise_fuel : class
+        The fuel used during cruise.
+    to_lift : class
+        The lift during takeoff.
+    delta_wing_sweep : list
+        The sweep of the wings.
+    x_wing_span : list
+        The span of the wings.
+    m_mto : float
+        The maximum takeoff mass of the aircraft.
+    m_fuel_cruise : float
+        The fuel mass used during cruise.
+    """
     def setup(self):
+        """
+        Initialize and set up the aircraft model.
+
+        This function sets up the aircraft model by adding child models and connecting them with input and output variables. It also adds inward and unknown variables, and defines an equation.
+
+        Returns
+        -------
+        None
+
+        Raises
+        ------
+        None
+        """
         model_list = [
             GenerateAeroGeom("ac_geom"),
             AircraftMass("mass"),
@@ -52,6 +98,28 @@ class OptimizeAircraftMass(System):
 
     def compute(self):
         # set geometry params
+        """
+        Compute various parameters related to wing design.
+
+        Notes
+        -----
+        This function modifies several attributes of the object it is called on.
+
+        Parameters
+        ----------
+        self : object
+            The object on which the function is called.
+
+        Returns
+        -------
+        None
+            This function does not return any value.
+
+        Raises
+        ------
+        None
+            This function does not raise any exceptions.
+        """
         inner_sweep = (31.5 / 23.5) * self.sweep_outer
         self.delta_wing_sweep = [inner_sweep, self.sweep_outer]
         self.x_wing_span = [self.x_wing_span[0], self.span_outer]
@@ -62,6 +130,37 @@ def optimize_geom():
     # import time
     # timestr = time.strftime("%Y%m%d-%H%M%S")
 
+    """
+    Optimize the geometry of an aircraft.
+
+    This function uses the single_aisle_concept and OptimizeAircraftMass classes from an external module to calculate
+    the optimal geometry for the aircraft based on various parameters. The optimization process aims to minimize the
+    cruise fuel consumption while satisfying certain constraints.
+
+    Parameters
+    ----------
+
+    None
+
+    Returns
+    -------
+    None
+
+    Raises
+    ------
+    None
+
+    Note
+    --------
+    This function modifies the attributes of the 'opt' object to set the input parameters for the optimization. After running the optimization process, it prints the total mass and chord wing root values of the optimized aircraft.
+
+    Example usage:
+    --------------
+    >>> optimize_geom()
+
+    opt.mass.total_mass=123456.789
+    opt.chord_wing_root=9.0
+    """
     opt = single_aisle_concept(OptimizeAircraftMass("opt"))
 
     # Performance params
@@ -121,7 +220,7 @@ def optimize_geom():
 def Cartesian_DoE(axes: dict) -> pandas.DataFrame:
     """
     Simple Cartesian grid DoE from 1D samples in all axis directions
-    https://cosapp.readthedocs.io/en/latest/tutorials/SystemSurrogates.html
+    [Link to further documentation](https://cosapp.readthedocs.io/en/latest/tutorials/SystemSurrogates.html)
     """
     return pandas.DataFrame(
         list(itertools.product(*axes.values())),
@@ -130,6 +229,21 @@ def Cartesian_DoE(axes: dict) -> pandas.DataFrame:
 
 
 def generate_metamodel_manual():
+    """
+    Generate a metamodel manually.
+
+    Generates a metamodel by performing a Design of Experiments (DOE) using specified input parameters. Prints the progress of each run and saves the results to a pickle file and a CSV file.
+
+    Returns
+    -------
+    None
+        This function does not return any value.
+
+    Raises
+    ------
+    None
+        This function does not raise any exceptions.
+    """
     import time
 
     timestr = time.strftime("%Y%m%d-%H%M%S")
@@ -251,6 +365,23 @@ def generate_metamodel_manual():
 
 
 def generate_metamodel_cosapp():
+    """
+    Generate a metamodel using the COSAPP (COmponental Synthesis, Analysis, and Parametric Performance) framework.
+
+    This function initializes a model, adds a driver, sets various parameters, runs the drivers to capture reference test data, generates a design of experiments (DOE), makes a surrogate model, and tests the surrogate model.
+
+    Parameters
+    ----------
+    None
+
+    Returns
+    -------
+    None
+
+    Raises
+    ------
+    None
+    """
     print("initializing model...")
     meta = single_aisle_concept(OptimizeAircraftMass("meta"))
     meta.add_driver(NonLinearSolver("nls", method="NR", tol=1e-2))
@@ -297,6 +428,19 @@ def generate_metamodel_cosapp():
 
 
 def run_once():
+    """
+    Run a simulation once to optimize the aircraft mass.
+
+    This function sets the values of various parameters related to the aircraft, such as altitude, Mach number, thrust engine,
+    range, fuel consumption during climb, descent, and taxi, and the initial fuel mass for cruise. It then adds a non-linear solver
+    as the driver for the optimization process and runs the optimization drivers. After each optimization run,
+    it prints the total mass of the aircraft.
+
+    Returns
+    -------
+    None
+        This function does not return any value.
+    """
     opt = single_aisle_concept(OptimizeAircraftMass("opt"))
 
     # Performance params

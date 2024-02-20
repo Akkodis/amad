@@ -1,10 +1,10 @@
 """________________________________________________________________________________
 
-                                   CRUISE MODULE 
+                                   CRUISE MODULE
 ___________________________________________________________________________________"""
-## This module takes in charge the computations for the climb segment.
+# This module takes in charge the computations for the climb segment.
 # Cruise.py
-##
+#
 # Created:  Sep 2022, R. ROJAS CARDENAS
 #
 
@@ -12,39 +12,41 @@ ________________________________________________________________________________
 #   Imports
 # ----------------------------------------------------------------------
 
-##Generic
+# Generic
 import numpy as np
 import math
 
-##CosApp
+# CosApp
 from cosapp.base import System
 
 # Important to define a path directory for other modules either in the enviroment or with 'sys' method.
 
-## Modules and tools
+#  Modules and tools
 import amad.disciplines.powerplant.systems.enginePerfoMattingly as eP
 import amad.tools.unit_conversion as uc
 import amad.tools.atmosBADA as atmos
-
-speedsclass = atmos.AtmosphereAMAD()  # Instantiate function to use in compute method.
 from amad.disciplines.performance.ports import SegmentPort
 from amad.disciplines.performance.tools import MissionCallback
 
+speedsclass = atmos.AtmosphereAMAD()  # Instantiate function to use in compute method.
+
 
 class Cruise_segment(System):
-    """Vehicle Cruise at a constant Throttle and constant Mach.
+    """
+    Vehicle Cruise at a constant Throttle and constant Mach.
 
     Assumptions:
-    1) The constant Mach number is taken from airburs getting into grips reports
+    1) The constant Mach number is taken from airbus getting into grips reports.
     2) The VC cruise limit speed is not considered in this version since the
-      "structure" discipline is not yet developed in order to know the aero-elasticity limitations.
+       "structure" discipline is not yet developed in order to know the aero-elasticity limitations.
     3) TAS input port correction in values since the A/C shall not change its position on the Y or Z earth axis.
     Source: Airbus Getting to grips and SUAVE.
-
     """
 
     def setup(self):
-        """`setup` method defines system structure"""
+        """
+        `setup` method defines system structure.
+        """
 
         # ------------------------------------------------------------------------------
         #   Input ports
@@ -137,7 +139,7 @@ class Cruise_segment(System):
         # ------------------------------------------------------------------------------
         #   Child systems
         # ------------------------------------------------------------------------------
-        ## Syub-systems definition (Diciplines' Modules and Bricks integration)
+        # Syub-systems definition (Diciplines' Modules and Bricks integration)
         # Here the only explicit sub-system comes from the propulsion module using the Mettingly method.
         self.add_child(
             eP.EnginePerfoMattingly(
@@ -193,7 +195,9 @@ class Cruise_segment(System):
         self.add_property("mission_callback", mc)
 
     def compute(self):
-        """`compute` method defines what the system does"""
+        """
+        `compute` method defines what the system does
+        """
 
         atm = atmos.AtmosphereAMAD(
             alt=self.in_p.position[2]

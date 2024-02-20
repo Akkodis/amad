@@ -1,12 +1,10 @@
 from amad.disciplines.aerodynamics.systems import AeroCalculateAVL
-from amad.disciplines.design.ports import AsbGeomPort
 from amad.disciplines.design.resources.aircraft_geometry_library import (
     ac_narrow_body_long_opti as airplane_geom,
 )
 import time
 import numpy
 import pandas
-import plotly.express as px
 
 aercal_avl = AeroCalculateAVL(
     "aercal_avl",

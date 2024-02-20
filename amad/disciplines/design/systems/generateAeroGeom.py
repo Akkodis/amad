@@ -6,11 +6,28 @@ from scipy.interpolate import interp1d
 
 
 class GenerateAeroGeom(BaseDesignComponent):
-    """This system creates a dictionary of design properties which will be used
-    to create an AeroSandBox airplane object for aero analysis
+    """
+    Creates a dictionary of design properties to create an AeroSandBox airplane object for aero analysis.
     """
 
     def setup(self):
+        """
+        Initialize the components needed to compute the aircraft geometry.
+
+        This function sets up the necessary inputs, outputs, and properties for the calculation of the aircraft geometry.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
+
+        Raises
+        ------
+        None
+        """
         super().setup()
 
         self.add_output(AsbGeomPort, "geom_out")
@@ -28,6 +45,35 @@ class GenerateAeroGeom(BaseDesignComponent):
         )
 
     def tip_displacement(self, span, angle, root_chord, tip_chord):
+        """
+        Calculate the tip displacement of a wing.
+
+        Parameters
+        ----------
+        self : object
+            The instance of the class this method belongs to.
+        span : float
+            The span of the wing.
+        angle : float
+            The angle of the wing.
+        root_chord : float
+            The root chord of the wing.
+        tip_chord : float
+            The tip chord of the wing.
+
+        Returns
+        -------
+        float
+            The tip displacement of the wing.
+
+        Raises
+        ------
+        None
+
+        Note
+        ----
+        This function assumes that the angle input is in degrees and converts it to radians for the calculations.
+        """
         return (
             (math.tan(math.radians(angle)) * span)
             + (0.25 * root_chord)
@@ -36,6 +82,47 @@ class GenerateAeroGeom(BaseDesignComponent):
 
     def tip_position(self, spans, sweeps, dihedrals, chords, half_span=True):
         # root position
+        """
+        Calculate the tip position of an aircraft wing.
+
+        Parameters
+        ----------
+        spans : list
+            A list of span lengths of the wing sections.
+        sweeps : list
+            A list of sweep angles of the wing sections.
+        dihedrals : list
+            A list of dihedral angles of the wing sections.
+        chords : list
+            A list of chord lengths of the wing sections.
+        half_span : bool, optional
+            Flag indicating whether to calculate tip position for half span
+            only. Defaults to True.
+
+        Returns
+        -------
+        tuple
+            A tuple containing three lists representing the x, y, and z coordinates
+            of the tip position of the wing.
+
+        Raises
+        ------
+        None
+
+        Notes
+        -----
+        - The tip position is calculated by iterating through each wing section and
+          calculating the incremental displacement in the x, y, and z directions.
+        - The x coordinate is calculated by adding the displacement in x direction for
+          each wing section to the previous x coordinate.
+        - The y coordinate is calculated by multiplying the span length of each wing
+          section by the span ratio and adding it to the previous y coordinate.
+        - The z coordinate is calculated by adding the displacement in z direction for
+          each wing section to the previous z coordinate.
+        - The half_span parameter determines whether to calculate the tip position for
+          the entire span or only the half span. If half_span is True, the span ratio
+          is set to 0.5, otherwise it is set to 1.0.
+        """
         tip_x = [0]
         tip_y = [0]
         tip_z = [0]
@@ -68,6 +155,37 @@ class GenerateAeroGeom(BaseDesignComponent):
         return tip_x, tip_y, tip_z
 
     def tip_position_combine(self, tip_x, tip_y, tip_z, axis="Y"):
+        """
+        Combine the coordinates of the tip position.
+
+        Parameters
+        ----------
+        self : object
+            The object instance.
+        tip_x : list
+            A list of x-coordinates of the tip position.
+        tip_y : list
+            A list of y-coordinates of the tip position.
+        tip_z : list
+            A list of z-coordinates of the tip position.
+        axis : str, optional
+            The axis along which to combine the coordinates. Default is 'Y'.
+
+        Returns
+        -------
+        list
+            A list of combined tip coordinates.
+
+        Raises
+        ------
+        None
+
+        Notes
+        -----
+        - The length of all input lists must be the same.
+        - If the axis is 'Z', the coordinates will be combined in the order (x, z, y).
+        - Otherwise, the coordinates will be combined in the order (x, y, z).
+        """
         if axis == "Z":  # axis is Z for rudders and vertical appendages
             tip_xyz = list(map(list, zip(*[tip_x, tip_z, tip_y])))
         else:
@@ -77,12 +195,67 @@ class GenerateAeroGeom(BaseDesignComponent):
 
     def calculate_chords(self, root_chord, taper_ratios):
         # create list of individual wing chords
+        """
+        Calculate the chord lengths of a tapered wing.
+
+        Parameters
+        ----------
+        root_chord : float
+            The chord length at the root of the wing.
+
+        taper_ratios : list
+            A list of taper ratios for each wing segment. The length of this list should be equal to the number of wing segments.
+
+        Returns
+        -------
+        list
+            A list of chord lengths for each wing segment, including the root chord.
+
+        Notes
+        -----
+        The chord lengths are calculated based on the taper ratios, which represent the ratio of the chord length at each wing segment to the chord length at the previous segment.
+
+        Examples
+        --------
+        >>> root_chord = 10.0
+        >>> taper_ratios = [0.8, 0.6, 0.4]
+        >>> calculate_chords(root_chord, taper_ratios)
+        [10.0, 8.0, 4.8, 1.92]
+
+        In this example, the root chord is 10.0 units and there are three wing segments with taper ratios of 0.8, 0.6, and 0.4. The calculated chord lengths are [10.0, 8.0, 4.8, 1.92] respectively.
+        """
         component_chords = [root_chord]
         for index, ratio in enumerate(taper_ratios):
             component_chords.append(ratio * component_chords[index])
         return component_chords
 
     def calculate_fuselage_len(self):
+        """
+        Calculate the length of the fuselage.
+
+        Parameters
+        ----------
+        self : object
+            The object containing the necessary input values.
+
+        Returns
+        -------
+        float
+            The length of the fuselage.
+
+        Notes
+        -----
+        This function calculates the length of the fuselage based on the number of passengers and the x-coordinate of the fuselage.
+
+        If the x-coordinate of the fuselage is less than or equal to 1,
+        the number of rows is determined by dividing the number of passengers by 6
+        and rounding up to the nearest integer. The length of the fuselage is then
+        calculated by multiplying the number of rows by 1.19.
+
+        If the x-coordinate of the fuselage is greater than 1, the length of the fuselage is set equal to the x-coordinate itself.
+
+        This function assumes that the number of passengers and the x-coordinate of the fuselage are valid input values.
+        """
         if self.x_fuse <= 1:
             # compute fuselage length based on no. passengers
             # note: only applicable to single aisle!
@@ -99,6 +272,21 @@ class GenerateAeroGeom(BaseDesignComponent):
     def compute(self):
         # TODO: add possibility to define multiple fuse sections
         # find lengths of external fuselage geometry definitions
+        """
+        Compute the aircraft geometry for the given parameters using the ASB method.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
+
+        Raises
+        ------
+        None
+        """
         nose_def_len = self.nose_def[-1][0]
         tail_def_len = self.tail_def[-1][0]
 

@@ -9,6 +9,25 @@ from rdp import rdp
 
 def reduce_points(x, y):
     # perform point reduction on a curve
+    """
+    Reduce the number of points in a set of coordinates using the Ramer-Douglas-Peucker algorithm.
+
+    Parameters
+    ----------
+    x : list
+        A list of x-coordinate values.
+    y : list
+        A list of y-coordinate values.
+
+    Returns
+    -------
+    tuple
+        A tuple containing the reduced x-coordinate values and reduced y-coordinate values.
+
+    Raises
+    ------
+    None
+    """
     co_ords_rdp = []
     for i in range(0, len(x)):
         co_ords_rdp.append([x[i], y[i]])
@@ -1033,10 +1052,10 @@ if __name__ == "__main__":
     y_flip = [max(y) - i for i in y]
 
     # split curve into two parts, upper [1] and lower [0]
-    x_0_orig = x_flip[0 : x_flip.index(min(x_flip))]
-    y_0_orig = y_flip[0 : x_flip.index(min(x_flip))]
-    x_1_orig = x_flip[x_flip.index(min(x_flip)) : -1]
-    y_1_orig = y_flip[x_flip.index(min(x_flip)) : -1]
+    x_0_orig = x_flip[0: x_flip.index(min(x_flip))]
+    y_0_orig = y_flip[0: x_flip.index(min(x_flip))]
+    x_1_orig = x_flip[x_flip.index(min(x_flip)): -1]
+    y_1_orig = y_flip[x_flip.index(min(x_flip)): -1]
 
     # perform point reduction on each curve
     x_0, y_0 = reduce_points(x_0_orig, y_0_orig)

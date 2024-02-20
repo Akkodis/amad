@@ -6,9 +6,27 @@ from amad.tools.unit_conversion import lb2kg
 
 
 class Internal(AbstractMassComponent):
-    """Internally-created model"""
+    """
+    Internally-created model
+    """
 
     def setup(self):
+        """
+        Initialize the class and set up the inward and outward attributes.
+
+        Parameters
+        ----------
+        self : object
+            The class object.
+
+        Returns
+        -------
+        None
+
+        Raises
+        ------
+        None
+        """
         inward_list = [
             "n_pax",
             "m_cargo",
@@ -20,6 +38,34 @@ class Internal(AbstractMassComponent):
         self.add_outward("m_pax")
 
     def compute_mass(self):
+        """
+        Compute the total mass of an object.
+
+        This function calculates the total mass of an object using the following formula:
+        total_mass = m_pax + m_check_in + m_cargo
+
+        Parameters
+        ----------
+        self : object
+            The object containing the necessary attributes to calculate the mass.
+
+        Returns
+        -------
+        None
+
+        Attributes Modified
+        -------------------
+        self.m_pax : float
+            The mass of the passengers.
+        self.m_check_in : float
+            The mass of the checked-in items.
+        self.total_mass : float
+            The total mass of the object.
+
+        Raises
+        ------
+        None
+        """
         self.m_pax = self.n_pax * lb2kg(195)  # pax weight including carry-on
         self.m_check_in = self.n_pax * lb2kg(30)
 
@@ -28,28 +74,56 @@ class Internal(AbstractMassComponent):
 
 
 class PayloadMass(BaseMassClass):
-    """Payload Mass model to Operating Empty Weight (OWE)
-    Includes Passenger, baggage, fuel and cargo weight
+    """
+    Payload Mass model to Operating Empty Weight (OWE)
 
-    Constructor arguments:
-    ----------------------
-    - name [str]: System name
-    - model [str]: Computation algorithm. Options are:
+    Parameters
+    ----------
+    name : str
+        System name.
+    model : str
+        Computation algorithm. Options are:
         - torenbeek: Egbeert Torenbeek
 
-    Children:
-    ---------
-    - model:
+    Attributes
+    ----------
+    model : AbstractMassComponent
         Concrete specialization of `AbstractMassComponent`.
         May possess model-specific parameters, as inwards.
     """
 
     def setup(self, model: str, **parameters):
+        """
+        Set up the model with the specified parameters.
+
+        Parameters
+        ----------
+        model : str
+            The name of the model to set up.
+        **parameters : keyword arguments
+            Additional parameters to pass to the model setup.
+
+        Raises
+        ------
+        TypeError
+            If an invalid parameter is provided.
+
+        Returns
+        -------
+        None
+            This function does not return anything.
+
+        Note
+        ----
+        This function calls the superclass's setup method and passes the specified model and parameters.
+        """
         super().setup(model=model, **parameters)
 
     @classmethod
     def models(cls) -> Dict[str, type]:
-        """Dictionary of available models"""
+        """
+        Dictionary of available models
+        """
         return {
             "internal": Internal,
             "specified": SpecifiedMass,

@@ -1,4 +1,12 @@
 def dreamer_nose():
+    """
+    Calculate the dreamer's nose position.
+
+    Returns
+    -------
+    tuple of tuples
+        A tuple containing the coordinates of the dreamer's nose position at different time points. Each tuple within the main tuple represents the (x, y, z, confidence) values of the nose position at a specific time point.
+    """
     return (
         (0.0, 0.0, -0.40440892570321574, 0.002228965313477751),
         (0.00021397761629469067, 0.0, -0.40752099119962515, 0.008312612204503638),
@@ -26,6 +34,22 @@ def dreamer_nose():
 
 
 def concept_nose():
+    """
+    Return a tuple representing the concept of a nose.
+
+    Returns
+    -------
+    tuple
+        A tuple of four float values representing the concept of a nose. The values are (tx, ty, tz, confidence), where tx, ty, tz represents the translation of the nose from the origin, and confidence represents the confidence in the estimation.
+
+    Notes
+    -----
+    The values in the tuple represent the following:
+        - tx: The translation of the nose along the x-axis.
+        - ty: The translation of the nose along the y-axis.
+        - tz: The translation of the nose along the z-axis.
+        - confidence: The confidence in the estimation of the nose concept.
+    """
     return (
         (0.0, 0.0, -0.3660710173093876, 0.0016602797232611597),
         (5.395061541020085e-05, 0.0, -0.3639561926523085, 0.005782557023271277),

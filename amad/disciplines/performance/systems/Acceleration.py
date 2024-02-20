@@ -33,15 +33,16 @@ from amad.disciplines.performance.tools import MissionCallback
 
 
 class Accelerate(System):
-    """Vehicle accelerates at a constant rate between two airspeeds.
+    """
+    Vehicle accelerates at a constant rate between two airspeeds.
 
     Assumptions:
-    1) The guard to know if the AC shall accelerate REGARDGING THE CAS [kt] OR THE MACH NUMBER relies
+    1) The guard to know if the AC shall accelerate REGARDING THE CAS [kt] OR THE MACH NUMBER relies
     on the following logic.
-    Both Mach_cruise and CAS_target have an initial value of 0.0. Thus, if during the instantiation of this brick the Mach_cruise or CAS_target value is changed then do. For instance, if any of the values is different to zero, it means that this brick shall accelerate to the target value in the corresponding speed.
+    Both Mach_cruise and CAS_target have an initial value of 0.0. Thus, if during the instantiation of this brick the Mach_cruise or CAS_target value is changed then do. For instance, if any of the values is different from zero, it means that this brick shall accelerate to the target value in the corresponding speed.
 
     REMARK !!!
-    IF NONE MODIFICATION IS MADE OR BOTH MACH AND CAS ARE CHANGED THEN POSSIBLE ERRORS IN COMPUTATION MIGHT ARISE...
+    IF NO MODIFICATION IS MADE OR BOTH MACH AND CAS ARE CHANGED THEN POSSIBLE ERRORS IN COMPUTATION MIGHT ARISE...
 
     2) Local correction for TAS input since the A/C shall not change its position on the Y or Z earth axis.
 
@@ -50,7 +51,9 @@ class Accelerate(System):
     """
 
     def setup(self):
-        """`setup` method defines system structure"""
+        """
+        Setup method defines system structure.
+        """
 
         # ------------------------------------------------------------------------------
         #   Input ports
@@ -176,7 +179,9 @@ class Accelerate(System):
         self.add_property("mission_callback", mc)
 
     def compute(self):
-        """`compute` method defines what the system does"""
+        """
+        compute method defines what the system does
+        """
         atm = atmos.AtmosphereAMAD(
             alt=self.in_p.position[2]
         )  # Input of Aircraft z-position (altitude) for  Atmosphere tool.
@@ -299,6 +304,19 @@ if __name__ == "__main__":
 
     # Callback function which prints output
     def print_callback(callback_data):
+        """
+        Print the callback data.
+
+        Parameters
+        ----------
+        callback_data : any
+            The data to be printed.
+
+        Returns
+        -------
+        None
+            This function does not return anything.
+        """        
         print(callback_data)
 
     s1 = Accelerate(name="s1")

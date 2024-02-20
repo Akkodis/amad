@@ -2,6 +2,34 @@ import math
 
 
 def average_sweep(spans: list, sweeps: list):
+    """
+    Calculate the average sweep angle from a list of span lengths and sweep angles.
+
+    Parameters
+    ----------
+    spans : list
+        A list of numeric values representing the lengths of each span.
+    sweeps : list or float
+        A list of numeric values representing the sweep angles for each span, or a single float value representing the average sweep angle.
+
+    Returns
+    -------
+    float
+        The average sweep angle calculated from the input spans and sweeps.
+
+    Raises
+    ------
+    TypeError
+        If the input sweeps is not a list for multiple spans.
+
+    Notes
+    -----
+    If the input sweeps is a list, the function calculates the average sweep angle by summing the displacements of each span and dividing by the total length of all spans. If the input sweeps is a single float value, it is returned as is.
+
+    The displacement for each span is calculated as the tangent of the sweep angle in radians multiplied by the
+    length of the span. The average sweep angle is then calculated by taking the arctangent of the ratio of total
+    displacement to the length of the last span, converted to degrees.
+    """
     if isinstance(sweeps, list):
         displacement = 0.0
         spans_abs = [spans[0]]

@@ -5,7 +5,45 @@ from amad.disciplines.mass.systems import AbstractMassComponent
 
 @pytest.fixture
 def factory():
+    """
+    Factory function to create an instance of PowerplantMass with specific parameters.
+
+    Parameters
+    ----------
+    model : str
+        The model of the powerplant.
+    thrust_eng : float
+        The thrust of the engine.
+    r_bypass : float
+        The bypass ratio of the engine.
+    d_nacelle : float
+        The diameter of the nacelle.
+
+    Returns
+    -------
+    PowerplantMass
+        An instance of PowerplantMass with the specified parameters.
+    """
     def factory_impl(model, thrust_eng, r_bypass, d_nacelle):
+        """
+        Create a powerplant object with specified parameters.
+
+        Parameters
+        ----------
+        model : str
+            The model of the powerplant.
+        thrust_eng : float
+            The thrust produced by each engine in the powerplant.
+        r_bypass : float
+            The bypass ratio of the powerplant.
+        d_nacelle : float
+            The diameter of the nacelle in the powerplant.
+
+        Returns
+        -------
+        PowerplantMass
+            The created powerplant object.
+        """
         syst = PowerplantMass(name="engmass", model=model)
         syst.n_eng = 2
         syst.mach_mo = 0.86
@@ -29,6 +67,33 @@ def factory():
 def test_PPmass_run_once(
     factory, model, expected_eng_mass, thrust_eng, r_bypass, d_nacelle
 ):
+    """
+    Test the calculation of the mass of a propulsion system.
+
+    Parameters
+    ----------
+    factory : function
+        A factory function that creates an instance of the engine model.
+    model : str
+        The engine model to be used.
+    expected_eng_mass : float
+        The expected mass of the engine.
+    thrust_eng : float
+        The thrust produced by the engine.
+    r_bypass : float
+        The bypass ratio of the engine.
+    d_nacelle : float
+        The diameter of the engine nacelle.
+
+    Returns
+    -------
+    None
+
+    Raises
+    ------
+    AssertionError
+        If the calculated engine mass does not match the expected value.
+    """
     eng = factory(model, thrust_eng, r_bypass, d_nacelle)
     eng.run_once()
     result = eng.total.mass
@@ -36,7 +101,9 @@ def test_PPmass_run_once(
 
 
 def test_PPmass_models():
-    """Test available model dictionary"""
+    """
+    Test available model dictionary
+    """
     models = PowerplantMass.models()
     assert list(models) == ["mod-raymer", "specified"]
     for stype in models.values():

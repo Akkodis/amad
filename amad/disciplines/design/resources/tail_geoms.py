@@ -1,4 +1,26 @@
 def dreamer_tail():
+    """
+    Return a tuple representing a sequence of dreamer tail values.
+
+    Returns
+    -------
+    tuple
+        A tuple of float values representing the dreamer tail.
+
+    Notes
+    -----
+    The tuple contains a sequence of tuples, each representing a dreamer tail value. Each dreamer tail value is a tuple of four float values.
+
+    The four float values in each dreamer tail tuple represent (x, y, z, w) where:
+    - x is the x-coordinate of the dreamer tail position
+    - y is the y-coordinate of the dreamer tail position
+    - z is the rotation angle of the dreamer tail
+    - w is the transparency of the dreamer tail
+
+    The dreamer tail tuple sequence starts from the base position and ends at the tip position.
+
+    The base position is (0, 0, 0, 1) and the tip position is (6.1, 0, 0.532602276933032, 0.0).
+    """
     return (
         (0, 0, 0, 1),
         (0.223831640724482, 0, 0.00010518096671035, 0.99989479903329),

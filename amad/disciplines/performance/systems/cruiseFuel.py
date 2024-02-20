@@ -5,6 +5,38 @@ from amad.disciplines.flight_dynamics.systems import CrzEquiPoint
 
 
 class CruiseFuel(System):
+    """
+    A class representing a cruise fuel system.
+
+    Parameters
+    ----------
+    asb_aircraft_geometry : AircraftGeometry
+        The geometry of the aircraft.
+    equi_calculator : Callable, optional
+        The function used to calculate the equilibrium point. Default is CrzEquiPoint.
+    ff_calculator : Callable, optional
+        The function used to calculate the fuel flow. Default is EnginePerfoMattingly.
+    **kwargs : dict, optional
+        Additional keyword arguments to pass to the ff_calculator.
+
+    Attributes
+    ----------
+    m_fuel_cruise : MassPort
+        The mass port representing the cruise fuel mass.
+    equi : EquiPoint
+        The equilibrium point calculator.
+    ff : EnginePerfoMattingly
+        The fuel flow calculator.
+    x_range : float
+        The design range in meters.
+
+    Methods
+    -------
+    setup(asb_aircraft_geometry, equi_calculator, ff_calculator, **kwargs)
+        Sets up the cruise fuel system.
+    compute()
+        Computes the fuel consumption during cruise.
+    """
     def setup(
         self,
         asb_aircraft_geometry,
@@ -13,6 +45,42 @@ class CruiseFuel(System):
         **kwargs,
     ):
         # self.add_outward('m_fuel_cruise_out', unit='kg')
+        """
+        Initialize the object and set up the calculations for aircraft performance and fuel flow.
+
+        Parameters
+        ----------
+        asb_aircraft_geometry : object
+            An object representing the aircraft geometry.
+        equi_calculator : object, optional
+            An object representing the equipment calculator. Default is CrzEquiPoint.
+        ff_calculator : object, optional
+            An object representing the fuel flow calculator. Default is EnginePerfoMattingly.
+        **kwargs : dict
+            Additional keyword arguments for the ff_calculator.
+
+        Returns
+        -------
+        None
+
+        Notes
+        -----
+        This function sets up the object by adding the necessary outputs, children, and inwards.
+
+        The following children are added:
+        - An instance of the equi_calculator class, named 'equi', with the specified parameters.
+        - An instance of the ff_calculator class, named 'ff', with the specified parameters.
+
+        The following outputs are added:
+        - An instance of the MassPort class, named 'm_fuel_cruise'.
+
+        The following inwards are added:
+        - An inward named 'x_range', with a default value of 0.0 meters and a unit of 'm'. This represents the design range.
+
+        Examples
+        --------
+        >>> obj = setup(asb_aircraft_geometry, equi_calculator=CrzEquiPoint, ff_calculator=EnginePerfoMattingly)
+        """
         self.add_output(MassPort, "m_fuel_cruise")
 
         pulling_equi = [
@@ -40,6 +108,17 @@ class CruiseFuel(System):
 
     def compute(self):
         # time taken to complete cruise segment (assumes zero wind speed)
+        """
+        Compute the fuel consumption during cruise.
+
+        Raises
+        ------
+        None
+
+        Returns
+        -------
+        None
+        """
         time_crz = self.x_range / self.equi.v_tas
 
         # fuel for cruise segment

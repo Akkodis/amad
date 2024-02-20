@@ -1,11 +1,11 @@
 """________________________________________________________________________________
 
-                                   DECELERATION MODULE 
+                                   DECELERATION MODULE
 ___________________________________________________________________________________"""
-## This module takes in charge the computations for the transition between segments
-## in case of deceleration.
+# This module takes in charge the computations for the transition between segments
+# in case of deceleration.
 # Decceleration.py
-##
+#
 # Created:  Sep 2022, R. ROJAS CARDENAS
 #
 
@@ -13,31 +13,34 @@ ________________________________________________________________________________
 #   Imports
 # ----------------------------------------------------------------------
 
-##Genericimport numpy as np
+# Genericimport numpy as np
 import numpy as np
 
-##CosApp
-from cosapp.base import System, Port
+# CosApp
+from cosapp.base import System
 
 # Important to define a path directory for other modules either in the enviroment or with 'sys' method.
 
-## Modules and tools
+# Modules and tools
 import amad.disciplines.powerplant.systems.enginePerfoMattingly as eP
 import amad.tools.unit_conversion as uc
 import amad.tools.atmosBADA as atmos
 from amad.disciplines.performance.tools import MissionCallback
-
-speedsclass = atmos.AtmosphereAMAD()  # Instantiate function to use in compute method.
 from amad.disciplines.performance.ports import SegmentPort
+speedsclass = atmos.AtmosphereAMAD()  # Instantiate function to use in compute method.
 
 
 class Decelerate(System):
-    """Vehicle decelerates at a constant rate between two airspeeds.
+    """
+    Vehicle decelerates at a constant rate between two airspeeds.
 
     Assumptions:
     1) The guard to know if the AC shall decelerate REGARDGING THE CAS [kt] OR THE MACH NUMBER relies
     on the following logic.
-    Both Mach_cruise and CAS_target inward variables have an initial value of 0.0. Thus, if during the instantiation of this brick the Mach_cruise or CAS_target value is changed then do. For instance, if any of the values is different to zero, it means that this brick shall accelerate to the target value in the corresponding speed.
+    Both `Mach_cruise` and `CAS_target` inward variables have an initial value of 0.0.
+    Thus, if during the instantiation of this brick the `Mach_cruise` or `CAS_target` value is changed then do.
+    For instance, if any of the values is different to zero, it means that this brick shall accelerate to the target value in
+    the corresponding speed.
 
     REMARK !!!
     IF NONE MODIFICATION IS MADE OR BOTH MACH AND CAS ARE CHANGED THEN POSSIBLE ERRORS IN COMPUTATION MIGHT ARISE...
@@ -49,7 +52,9 @@ class Decelerate(System):
     """
 
     def setup(self):
-        """`setup` method defines system structure"""
+        """
+        `setup` method defines system structure.
+        """
 
         # ------------------------------------------------------------------------------
         #   Input ports
@@ -115,7 +120,7 @@ class Decelerate(System):
         # ------------------------------------------------------------------------------
         #   Child systems
         # ------------------------------------------------------------------------------
-        ## Syub-systems definition (Diciplines' Modules and Bricks integration)
+        # Syub-systems definition (Diciplines' Modules and Bricks integration)
         # Here the only explicit sub-system comes from the propulsion module using the Mettingly method.
         self.add_child(
             eP.EnginePerfoMattingly(
@@ -171,7 +176,9 @@ class Decelerate(System):
 
     def compute(self):
         # print('dec')
-        """`compute` method defines what the system does"""
+        """
+        compute method defines what the system does
+        """
 
         atm = atmos.AtmosphereAMAD(
             alt=self.in_p.position[2]

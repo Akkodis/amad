@@ -1,4 +1,27 @@
 def lifting_area(spans, taper_ratios, root_chord: float):
+    """
+    Calculate the area of a lifting surface.
+
+    Parameters
+    ----------
+    spans : list or float
+        If a list, it represents the span lengths of each section of the lifting surface.
+        If a float, it represents the total span length of the lifting surface.
+    taper_ratios : list or float
+        If a list, it represents the taper ratios of each section of the lifting surface.
+        If a float, it represents the taper ratio of the lifting surface.
+    root_chord : float
+        The root chord length of the lifting surface.
+
+    Returns
+    -------
+    float
+        The area of the lifting surface.
+
+    Raises
+    ------
+    None
+    """
     if isinstance(spans, list):
         area_lifting_surface = 0.0
         spans_abs = [spans[0]]

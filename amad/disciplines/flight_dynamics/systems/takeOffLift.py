@@ -13,6 +13,26 @@ class TakeOffLift(System):
     def setup(
         self, asb_aircraft_geometry: dict, aero_calculator=AeroCalculateAVL, **kwargs
     ):
+        """
+        Configure the setup of the class.
+
+        Parameters
+        ----------
+        asb_aircraft_geometry : dict
+            A dictionary containing the aircraft geometry information.
+        aero_calculator : class, optional
+            The aerodynamic calculator class to use (default is AeroCalculateAVL).
+        **kwargs :
+            Additional keyword arguments.
+
+        Returns
+        -------
+        None
+
+        Raises
+        ------
+        None
+        """
         self.add_input(AsbGeomPort, "geom_in")
 
         # aero_calculator can be substited at runtime with alternative calculation methods
@@ -34,6 +54,14 @@ class TakeOffLift(System):
         self.add_outward("cache", {})
 
     def launch_avl_calc(self):
+        """
+        Launch AVL calculation and retrieve lift and drag values.
+
+        Returns
+        -------
+        tuple
+            A tuple containing the lift (L) and drag (D) values calculated by AVL.
+        """
         self.aero_calculator.alpha_aircraft = [self.alpha_takeoff]
         self.aero_calculator.beta_aircraft = [0.0]
         self.aero_calculator.z_altitude = [self.z_altitude_takeoff]
@@ -45,6 +73,31 @@ class TakeOffLift(System):
 
     def compute(self):
         # send incoming geometry to aero calc
+        """
+        Compute the lift and drag forces for takeoff.
+
+        This method calculates the lift and drag forces for a given aircraft geometry and flight parameters at takeoff. The lift and drag forces are computed using the AVL (Aircraft Vortex Lattice) method.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
+
+        Side Effects
+        ------------
+        Sets the following attributes of the class instance:
+        - f_lift_takeoff : float
+            The lift force during takeoff, expressed in Newtons (N).
+        - f_drag_takeoff : float
+            The drag force during takeoff, expressed in Newtons (N).
+
+        Raises
+        ------
+        None
+        """
         self.aero_calculator.geom_in.asb_aircraft_geometry = (
             self.geom_in.asb_aircraft_geometry
         )

@@ -2,12 +2,39 @@ from cosapp.base import System
 
 
 class BaseDesignComponent(System):
-    """The base component for design systems
-    Inward parameters are input automatically from a configuration file
+    """
+    The base component for design systems.
 
+    Parameters
+    ----------
+    None
+
+    Returns
+    -------
+    None
     """
 
     def setup(self):
+        """
+        Setup the input definitions for the class.
+
+        Parameters
+        ----------
+        self : object
+            The instance of the class.
+
+        Returns
+        -------
+        None
+
+        Notes
+        -----
+        This function iterates through the input definition dictionary and adds each parameter to the class using the add_inward method. The parameter's unit, description, default value, and data type are extracted from the input definition.
+
+        Raises
+        ------
+        None
+        """
         input_definition = {
             "ac_name": {"Description": "", "Unit": "STR"},
             "canard_airfoils": {

@@ -5,7 +5,57 @@ from amad.disciplines.mass.systems import AbstractMassComponent
 
 @pytest.fixture
 def factory():
+    """
+    Factory function for creating WingMass objects.
+
+    This factory function creates a WingMass object with the given parameters and returns it.
+
+    Parameters
+    ----------
+    model : str
+        The name of the model.
+    tech_bracing : float
+        The technical bracing value.
+    m_mto : float
+        The maximum takeoff weight value.
+    m_mzf : float
+        The maximum zero fuel weight value.
+
+    Returns
+    -------
+    WingMass
+        The created WingMass object.
+
+    Raises
+    ------
+    KeyError
+        If a given parameter is not valid for the WingMass object.
+    """
     def factory_impl(model, tech_bracing, m_mto, m_mzf):
+        """
+        Create a WingMass object with specified parameters.
+
+        Parameters
+        ----------
+        model : str
+            Name of the wing model.
+        tech_bracing : bool
+            Flag indicating whether or not the wing has technical bracing.
+        m_mto : float
+            Maximum takeoff mass of the aircraft.
+        m_mzf : float
+            Maximum zero fuel mass of the aircraft.
+
+        Returns
+        -------
+        WingMass
+            The WingMass object created with the specified parameters.
+
+        Raises
+        ------
+        KeyError
+            If any of the specified parameters are not valid for the WingMass object.
+        """
         syst = WingMass(name="wingweight", model=model)
 
         parameters = {
@@ -47,6 +97,33 @@ def factory():
 def test_WingMass_run_once(
     factory, model, expected_wing_mass, tech_bracing, m_mto, m_mzf
 ):
+    """
+    Test the calculation of wing mass for different models.
+
+    Parameters
+    ----------
+    factory : function
+        The function used to create the wing object.
+    model : str
+        The model name of the wing.
+    expected_wing_mass : float
+        The expected mass of the wing.
+    tech_bracing : str
+        The type of bracing technology used for the wing.
+    m_mto : float
+        The maximum takeoff mass of the wing.
+    m_mzf : float
+        The maximum zero-fuel mass of the wing.
+
+    Returns
+    -------
+    None
+
+    Raises
+    ------
+    AssertionError
+        If the calculated wing mass does not match the expected value.
+    """
     wing = factory(model, tech_bracing, m_mto, m_mzf)
     wing.run_once()
     result = wing.total.mass
@@ -54,7 +131,9 @@ def test_WingMass_run_once(
 
 
 def test_WingMass_models():
-    """Test available model dictionary"""
+    """
+    Test available model dictionary
+    """
     models = WingMass.models()
     assert list(models) == ["simpleac", "cessna", "torenbeek", "specified"]
     for stype in models.values():
