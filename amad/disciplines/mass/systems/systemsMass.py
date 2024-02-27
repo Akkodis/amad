@@ -11,36 +11,81 @@ from amad.disciplines.design.tools.liftingArea import lifting_area
 
 
 class FLOPS(AbstractMassComponent):
-    """FLOPS Systems Mass Models
-    Reference NASA/TM-2017-219627/Volume I
-    Influencing Parameters:
-        x_fuse
-        w_fuse
-        h_fuse
-        x_cabin
-        n_flcr
-        n_pax
-        n_pax_f
-        n_pax_j
-        n_pax_y
-        n_fuse
-        f_wing_var_sweep
-        delta_wing_sweep
-        x_wing_span
-        m_mto
-        mach_mo
-        x_range
-        d_nacelle
-        n_eng
-        n_eng_fuse
-        a_control_surfaces
-        p_hydraulic
-        m_fuel
-        r_wing_taper
-        chord_wing_root
+    """
+    FLOPS Systems Mass Models
+
+    Parameters
+    ----------
+    x_fuse : numeric
+        Description of parameter x_fuse.
+    w_fuse : numeric
+        Description of parameter w_fuse.
+    h_fuse : numeric
+        Description of parameter h_fuse.
+    x_cabin : numeric
+        Description of parameter x_cabin.
+    n_flcr : numeric
+        Description of parameter n_flcr.
+    n_pax : numeric
+        Description of parameter n_pax.
+    n_pax_f : numeric
+        Description of parameter n_pax_f.
+    n_pax_j : numeric
+        Description of parameter n_pax_j.
+    n_pax_y : numeric
+        Description of parameter n_pax_y.
+    n_fuse : numeric
+        Description of parameter n_fuse.
+    f_wing_var_sweep : numeric
+        Description of parameter f_wing_var_sweep.
+    delta_wing_sweep : numeric
+        Description of parameter delta_wing_sweep.
+    x_wing_span : numeric
+        Description of parameter x_wing_span.
+    m_mto : numeric
+        Description of parameter m_mto.
+    mach_mo : numeric
+        Description of parameter mach_mo.
+    x_range : numeric
+        Description of parameter x_range.
+    d_nacelle : numeric
+        Description of parameter d_nacelle.
+    n_eng : numeric
+        Description of parameter n_eng.
+    n_eng_fuse : numeric
+        Description of parameter n_eng_fuse.
+    a_control_surfaces : numeric
+        Description of parameter a_control_surfaces.
+    p_hydraulic : numeric
+        Description of parameter p_hydraulic.
+    m_fuel : numeric
+        Description of parameter m_fuel.
+    r_wing_taper : numeric
+        Description of parameter r_wing_taper.
+    chord_wing_root : numeric
+        Description of parameter chord_wing_root.
     """
 
     def setup(self):
+        """
+        Set up the attributes and connections for the class.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
+
+        Notes
+        -----
+        This function sets up the inward and outward connections for the class using the `super()` method.
+        It also adds specific attributes to the class using the `add_outward()` method.
+        These attributes include 'fmxtot', 'sflap', 'dg', 'fparea', 'sw', 'fnew', 'xl', 'wf', 'b', 'df',
+        'm_fuel_system', 'm_surface_controls', 'm_apu', 'm_instruments', 'm_hydraulics', 'm_electrical',
+        'm_avionics', 'm_air_conditioning', 'm_anti_ice', and 'm_furnishings'.
+        """
         inward_list = [
             "x_fuse",
             "w_fuse",
@@ -96,6 +141,35 @@ class FLOPS(AbstractMassComponent):
 
     def compute_mass(self):
         # FLOPS intermediate parameters
+        """
+        Compute the mass of an aircraft.
+
+        Parameters
+        ----------
+        self : object
+            The instance of the aircraft.
+
+        Returns
+        -------
+        None
+
+        Raises
+        ------
+        None
+
+        Notes
+        -----
+        This function calculates the mass of an aircraft based on various parameters and equations. The final mass is assigned to the `total_mass` attribute of the aircraft instance.
+
+        The function makes use of the following conversions:
+        - `sqm2sqft`: Converts square meters to square feet.
+        - `m2ft`: Converts meters to feet.
+        - `kg2lb`: Converts kilograms to pounds.
+        - `pa2psi`: Converts Pascal to pounds per square inch.
+        - `n2lb`: Converts Newton to pounds.
+        - `m2nm`: Converts meters to nautical miles.
+        - `lb2kg`: Converts pounds to kilograms.
+        """
         self.fparea = sqm2sqft(area=(self.n_fuse * self.x_fuse * self.w_fuse))
         self.fnew = self.n_eng - self.n_eng_fuse
 
@@ -281,29 +355,50 @@ class FLOPS(AbstractMassComponent):
 
 
 class SystemsMass(BaseMassClass):
-    """Systems mass models for the following systems:
+    """
+    Systems mass models for the following systems:
 
 
     Model List:
     ----------------------
-    - name [str]: System name
-    - model [str]: Computation algorithm. Options are:
+    - name (str): System name
+    - model (str): Computation algorithm. Options are:
         - cairns: Statistical model using thrust and bypass ratio
         - specified: User-specified mass
 
     Children:
     ---------
-    - model:
+    - model (AbstractMassComponent):
         Concrete specialization of `AbstractMassComponent`.
         May possess model-specific parameters, as inwards.
     """
 
     def setup(self, model: str, **parameters):
+        """
+        Set up the model with the specified parameters.
+
+        Parameters
+        ----------
+        model : str
+            The name of the model to be set up.
+        **parameters : dict
+            Additional keyword arguments that specify the parameters for setting up the model.
+
+        Raises
+        ------
+        None
+
+        Returns
+        -------
+        None
+        """
         super().setup(model=model, **parameters)
 
     @classmethod
     def models(cls) -> Dict[str, type]:
-        """Dictionary of available models"""
+        """
+        Dictionary of available models
+        """
         return {
             "flops": FLOPS,
             "specified": SpecifiedMass,

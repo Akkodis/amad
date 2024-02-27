@@ -18,6 +18,31 @@ def test_TailMass_run_once(
     tech_stabilizers,
     tech_htail_mounting,
 ):
+    """
+    Test the functionality of the `TailMass_run_once` function.
+
+    Parameters
+    ----------
+    expected_tail_mass : float
+        The expected value of the tail mass.
+
+    v_dive : float
+        The dive speed in knots.
+
+    tech_stabilizers : str
+        The technology used for stabilizers.
+
+    tech_htail_mounting : str
+        The technology used for horizontal tail mounting.
+
+    Raises
+    ------
+    None
+
+    Returns
+    -------
+    None
+    """
     tailmass = EmpennageMass(name="tailmass", model="torenbeek")
     tailmass.v_dive = v_dive / 1.94384
     tailmass.tech_stabilizers = tech_stabilizers
@@ -41,7 +66,9 @@ def test_TailMass_run_once(
 
 
 def test_EmpMass_models():
-    """Test available model dictionary"""
+    """
+    Test available model dictionary
+    """
     models = EmpennageMass.models()
     assert list(models) == ["torenbeek", "specified"]
     for stype in models.values():

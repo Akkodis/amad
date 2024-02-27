@@ -1,10 +1,10 @@
 """________________________________________________________________________________
 
-                                   CLIMB MODULE 
+                                   CLIMB MODULE
 ___________________________________________________________________________________"""
-## This module takes in charge the computations for the climb segment.
+#  This module takes in charge the computations for the climb segment.
 # Climb.py
-##
+#
 # Created:  Sep 2022, R. ROJAS CARDENAS
 #
 
@@ -12,44 +12,53 @@ ________________________________________________________________________________
 #   Imports
 # ----------------------------------------------------------------------
 
-##Generic
+# Generic
 import numpy as np
 import math
 
-##CosApp
+# CosApp
 from cosapp.base import System
 
 # Important to define a path directory for other modules either in the enviroment or with 'sys' method.
 
-## Modules and tools
+# Modules and tools
 import amad.disciplines.powerplant.systems.enginePerfoMattingly as eP
 import amad.tools.unit_conversion as uc
 import amad.tools.atmosBADA as atmos
-
-speedsclass = atmos.AtmosphereAMAD()  # Instantiate function to use in compute method.
 from amad.disciplines.performance.ports import SegmentPort
 from amad.disciplines.performance.tools import MissionCallback
 
+speedsclass = atmos.AtmosphereAMAD()  # Instantiate function to use in compute method.
+
 
 class Climb_segment(System):
-    """Vehicle Climb at a constant Throttle and constant CAS.
+    """
+    Vehicle Climb at a constant Throttle and constant CAS.
 
-    Assumptions:
-    1) The constant CAS is taken from the standard procedure described in the Airbus Getting to Grips.
-    2) The guard to know if the AC shall climb with at a constant CAS or at IsoMach depends on the mode_variable "ISOMach" [Boolean type].
+    Parameters
+    ----------
+    constant_CAS : float
+        The constant calibrated airspeed (CAS) value.
+    mode_variable : bool
+        The mode variable to determine if the aircraft should climb at a constant CAS or at IsoMach.
 
-    REMARK !!!
-    Do not confund ISOMach with the Inward variable "Iso_Mach" [Float type] that defines the Mach number to maintain constant."
+    Other Assumptions
+    -----------------
+    1) The constant CAS value is derived from the standard procedure described in the Airbus Getting to Grips.
+    2) The "ISOMach" variable (bool) determines whether the aircraft should climb at a constant CAS or at IsoMach.
+       It should not be confused with the "Iso_Mach" variable (float) which defines the Mach number to maintain constant.
+    3) A constant throttle is considered, as the Mattingly Propulsion Module requires an input rating and does not provide position constraints.
 
-    3) A constant throttle is considered since the Propulsion Module from Mattingly takes an input rating.
-       It is into consideration a module whos variable throttle is not constrainted in position in order to define a constant rate of climb.
-
-    Source: Airbus Getting to grips and SUAVE.
-
+    Sources
+    -------
+    1) Airbus Getting to Grips
+    2) SUAVE
     """
 
     def setup(self):
-        """`setup` method defines system structure"""
+        """
+        Setup method defines system structure.
+        """
 
         # ------------------------------------------------------------------------------
         #   Input ports
@@ -130,7 +139,7 @@ class Climb_segment(System):
         # ------------------------------------------------------------------------------
         #   Child systems
         # ------------------------------------------------------------------------------
-        ## Syub-systems definition (Diciplines' Modules and Bricks integration)
+        # Syub-systems definition (Diciplines' Modules and Bricks integration)
         # Here the only explicit sub-system comes from the propulsion module using the Mettingly method.
         self.add_child(
             eP.EnginePerfoMattingly(
@@ -199,7 +208,9 @@ class Climb_segment(System):
         self.add_property("mission_callback", mc)
 
     def compute(self):
-        """`compute` method defines what the system does"""
+        """
+        Compute method defines what the system does.
+        """
 
         # self.CAS = uc.kt2ms(self.CAS) #Parsing CAS to m/s.
         atm = atmos.AtmosphereAMAD(
@@ -211,14 +222,14 @@ class Climb_segment(System):
 
         """ IsoMach guard verification  """
 
-        if self.IsoMach == False:
+        if self.IsoMach is False:
             self.TAS = speedsclass.cas2tas(
                 uc.kt2ms(self.CAS), self.in_p.position[2]
             )  # convertion from CAS to TAS.
             self.Mach = speedsclass.tas2mach(
                 self.TAS, self.in_p.position[2]
             )  # convertion from TAS to Mach.
-        elif self.IsoMach == True:
+        elif self.IsoMach is True:
             self.Mach = self.Iso_Mach
             self.TAS = speedsclass.mach2tas(
                 self.Mach, self.in_p.position[2]
@@ -291,6 +302,17 @@ class Climb_segment(System):
         self.mission_callback.callback({"segment": "Climb", "data": self.out_p})
 
     def transition(self):
+        """
+        Set IsoMach to True if Crossover_altitude is present.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
+        """
         if self.Crossover_altitude.present:
             self.IsoMach = True
 

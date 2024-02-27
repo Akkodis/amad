@@ -1,10 +1,10 @@
 """________________________________________________________________________________
 
-                                   DESCENT MODULE 
+                                   DESCENT MODULE
 ___________________________________________________________________________________"""
-## This module takes in charge the computations for the climb segment.
+# This module takes in charge the computations for the climb segment.
 # Descent.py
-##
+#
 # Created:  Sep 2022, R. ROJAS CARDENAS
 #
 
@@ -12,48 +12,48 @@ ________________________________________________________________________________
 #   Imports
 # ----------------------------------------------------------------------
 
-##Generic
+# Generic
 import numpy as np
 import math
-import warnings
 from ambiance import Atmosphere
 
-##CosApp
-from cosapp.base import System, Port
+# CosApp
+from cosapp.base import System
 
 # Important to define a path directory for other modules either in the enviroment or with 'sys' method.
 
-## Modules and tools
+# Modules and tools
 import amad.disciplines.powerplant.systems.enginePerfoMattingly as eP
 import amad.tools.unit_conversion as uc
 import amad.tools.atmosBADA
-
+from amad.disciplines.performance.ports import SegmentPort
+from amad.disciplines.performance.tools import MissionCallback
 speedsclass = (
     amad.tools.atmosBADA.AtmosphereAMAD()
 )  # Instantiate function to use in compute method.
-from amad.disciplines.performance.ports import SegmentPort
-from amad.disciplines.performance.tools import MissionCallback
 
 
 class Descent_segment(System):
-    """Vehicle Descent at a constant Throttle and constant CAS.
+    """
+    Vehicle Descent at a constant Throttle and constant CAS.
 
     Assumptions:
-    1) The constant CAS is taken from the standard procedure described in the Airbus Getting to Grips.
-    2) The guard to know if the AC shall descent with at a constant CAS or at IsoMach depends on the mode_variable "ISOMach" [Boolean type].
+        1) The constant CAS is taken from the standard procedure described in the Airbus Getting to Grips.
+        2) The guard to know if the AC shall descent with at a constant CAS or at IsoMach depends on the mode_variable "ISOMach" [Boolean type].
 
     REMARK !!!
     Do not confund ISOMach with the Inward variable "Iso_Mach" [Float type] that defines the Mach number to maintain constant."
 
-    3) A
-       It is into consideration a module whos variable throttle is not constrainted in position in order to define a constant rate of climb.
+        3) A
+           It is into consideration a module whos variable throttle is not constrainted in position in order to define a constant rate of climb.
 
     Source: Airbus Getting to grips and SUAVE.
-
     """
 
     def setup(self):
-        """`setup` method defines system structure"""
+        """
+        `setup` method defines system structure
+        """
 
         # ------------------------------------------------------------------------------
         #   Input ports
@@ -135,7 +135,7 @@ class Descent_segment(System):
         # ------------------------------------------------------------------------------
         #   Child systems
         # ------------------------------------------------------------------------------
-        ## Syub-systems definition (Diciplines' Modules and Bricks integration)
+        # Syub-systems definition (Diciplines' Modules and Bricks integration)
         # Here the only explicit sub-system comes from the propulsion module using the Mettingly method.
         self.add_child(
             eP.EnginePerfoMattingly(
@@ -202,7 +202,9 @@ class Descent_segment(System):
         self.add_property("mission_callback", mc)
 
     def compute(self):
-        """`compute` method defines what the system does"""
+        """
+        `compute` method defines what the system does
+        """
         atm = Atmosphere(
             self.in_p.position[2]
         )  # Input of Aircraft z-position (altitude) for  Atmosphere tool.
@@ -210,7 +212,7 @@ class Descent_segment(System):
 
         """ IsoMach guard verification  """
 
-        if self.IsoMach == True:
+        if self.IsoMach is True:
             self.Mach = self.Iso_Mach
             self.TAS = speedsclass.mach2tas(
                 self.Mach, self.in_p.position[2]
@@ -220,7 +222,7 @@ class Descent_segment(System):
             )  # convertion from mach to TAS
             self.CAS = uc.ms2kt(self.CAS_CrossOver)
 
-        elif self.IsoMach == False:
+        elif self.IsoMach is False:
             self.TAS = speedsclass.cas2tas(
                 uc.kt2ms(self.CAS), self.in_p.position[2]
             )  # convertion from CAS to TAS
@@ -293,12 +295,30 @@ class Descent_segment(System):
         self.mission_callback.callback({"segment": "Descent", "data": self.out_p})
 
     def transition(self):
+        """
+        Transition the current state of the object.
+
+        If the crossover altitude is present, set the IsoMach attribute to False.
+
+        Parameters
+        ----------
+        self : object
+            The current object instance.
+
+        Returns
+        -------
+        None
+
+        Raises
+        ------
+        None
+        """
         if self.Crossover_altitude.present:
             self.IsoMach = False
 
 
 if __name__ == "__main__":
-    from cosapp.drivers import EulerExplicit, RungeKutta, NonLinearSolver, RunSingleCase
+    from cosapp.drivers import RungeKutta, NonLinearSolver
     from cosapp.recorders import DataFrameRecorder
     import amad.disciplines.aerodynamics.tools.createAeroInterpolationCSV as aeroInterp  # Tool to create the function to Interpolate.
 

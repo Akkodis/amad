@@ -9,10 +9,43 @@ from amad.disciplines.design.tools.liftingArea import lifting_area
 
 class Combined(AbstractMassComponent):
     """
-    Completion mass estimation of the paint, flight crew and unusable fuel mass.
+    Estimate the mass of completion paint, flight crew, and unusable fuel.
+
+    Parameters
+    ----------
+    None
+
+    Returns
+    -------
+    float
+        The estimated total mass of completion paint, flight crew, and unusable fuel.
     """
 
     def setup(self):
+        """
+        Initialize the setup for an aircraft object.
+
+        Parameters
+        ----------
+        self : object
+            The instance of the aircraft object.
+
+        Returns
+        -------
+        None
+
+        Notes
+        -----
+        This method sets up the initial configuration for the aircraft object by initializing the
+        inward_list and adding outward properties. The inward_list is a list of strings representing
+        the attributes of the aircraft. The add_outward method is used to add
+        outward properties to the aircraft object.
+
+        Examples
+        --------
+        >>> air = Aircraft()
+        >>> air.setup()
+        """
         inward_list = [
             "x_wing_span",
             "r_wing_taper",
@@ -44,6 +77,24 @@ class Combined(AbstractMassComponent):
 
     def compute_mass(self):
         # compute wing area
+        """
+        Compute the mass of an aircraft.
+
+        This function calculates the mass of an aircraft based on various parameters including wing span, taper ratio, root chord, tail span, and fuel capacity.
+
+        Parameters
+        ----------
+        self : object
+            The aircraft object.
+
+        Returns
+        -------
+        None
+
+        Raises
+        ------
+        None
+        """
         a_wing = lifting_area(self.x_wing_span, self.r_wing_taper, self.chord_wing_root)
 
         # tail areas
@@ -84,28 +135,56 @@ class Combined(AbstractMassComponent):
 
 
 class CompletionMass(BaseMassClass):
-    """Completion Mass model to Operating Empty Weight (OWE)
-    Includes Paint, Crew, Operating Items
+    """
+    Compute the Operating Empty Weight (OWE) based on a completion mass model.
+    This model includes factors such as paint, crew, and operating items.
 
-    Constructor arguments:
-    ----------------------
-    - name [str]: System name
-    - model [str]: Computation algorithm. Options are:
-        - torenbeek: Egbeert Torenbeek
+    Parameters
+    ----------
+    name : str
+        Name of the system.
+    model : str
+        Computation algorithm. Available options are:
+            - torenbeek: Torenbeek algorithm
 
-    Children:
-    ---------
-    - model:
-        Concrete specialization of `AbstractMassComponent`.
-        May possess model-specific parameters, as inwards.
+    Attributes
+    ----------
+    model : AbstractMassComponent
+        Concrete specialization of the `AbstractMassComponent` class.
+        It may have model-specific parameters.
+
+    Returns
+    -------
+    float
+        The computed Operating Empty Weight (OWE).
     """
 
     def setup(self, model: str, **parameters):
+        """
+        Set up the specified model with the given parameters.
+
+        Parameters
+        ----------
+        model : str
+            The name of the model to set up.
+        **parameters : keyword arguments
+            Additional parameters to pass to the setup method.
+
+        Raises
+        ------
+        None
+
+        Returns
+        -------
+        None
+        """
         super().setup(model=model, **parameters)
 
     @classmethod
     def models(cls) -> Dict[str, type]:
-        """Dictionary of available models"""
+        """
+        Dictionary of available models.
+        """
         return {
             "combined": Combined,
             "specified": SpecifiedMass,

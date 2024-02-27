@@ -8,6 +8,24 @@ import numpy as np
 
 
 class AeroCalculateASB(BaseAeroCalculator):
+    """
+    A class for performing aerodynamic calculations on an aircraft.
+
+    Parameters
+    ----------
+    asb_aircraft_geometry : dict
+        A dictionary representing the geometry of the aircraft.
+    atmos_model : AtmosphereAMAD, optional
+        An object representing the atmospheric conditions during calculation. Defaults to AtmosphereAMAD().
+    init_altitude : float, optional
+        The initial altitude for the calculations. Defaults to 0.0.
+    option_optimization : bool, optional
+        An option to enable optimization. Defaults to True.
+    option_method : str, optional
+        The method to use for the calculations. Can be 'AVL', 'VLM', or 'LL'. Defaults to 'AVL'.
+    debug : bool, optional
+        An option to enable debug messages. Defaults to False.
+    """
     def setup(
         self,
         asb_aircraft_geometry: dict,
@@ -17,6 +35,32 @@ class AeroCalculateASB(BaseAeroCalculator):
         option_method="AVL",
         debug=False,
     ):
+        """
+        Set up the AeroSandBox analysis environment.
+
+        Parameters
+        ----------
+        asb_aircraft_geometry : dict
+            Dictionary containing aircraft geometry information.
+        atmos_model : AtmosphereAMAD, optional
+            Object representing the atmospheric conditions.
+        init_altitude : float, optional
+            Initial altitude of the aircraft.
+        option_optimization : bool, optional
+            Flag indicating if optimization is enabled.
+        option_method : str, optional
+            Method used for analysis.
+        debug : bool, optional
+            Flag indicating if debug mode is enabled.
+
+        Raises
+        ------
+        None
+
+        Returns
+        -------
+        None
+        """
         self.add_input(AsbGeomPort, "geom_in")
         self.add_inward("option_method", option_method)
         self.add_outward("asb_geometry_internal", asb_aircraft_geometry)
@@ -51,6 +95,92 @@ class AeroCalculateASB(BaseAeroCalculator):
 
     def compute_aero(self):
         # calculate TAS for the given mach and altitude
+        """
+        Compute the aerodynamic parameters of the aircraft.
+
+        This function calculates the aerodynamic parameters of the aircraft based on its current state and geometry.
+
+        Parameters
+        ----------
+        self : object
+            The current instance of the class.
+
+        Returns
+        -------
+        None
+
+        Raises
+        ------
+        RuntimeError
+            If there is a problem running the aerodynamic analysis.
+
+        Notes
+        -----
+        This function updates several attributes of the class instance.
+
+        - v_tas : float
+            True airspeed of the aircraft.
+        - alpha_aircraft : float
+            Aircraft angle of attack.
+        - option_optimization : bool
+            Flag indicating whether the optimization option is enabled.
+        - geom_in.asb_aircraft_geometry : dict
+            Input geometry of the aircraft.
+        - asb_geometry_internal : dict
+            Updated geometry of the aircraft.
+        - flight_vehicle : object
+            Instance of the FlightVehicle class.
+        - runtime_atmosphere_condition : object
+            Instance of the Atmosphere class.
+        - operating_point : object
+            Instance of the OperatingPoint class.
+        - q : float
+            Dynamic pressure of the air.
+        - nacelle_c : float (constant)
+            Coefficient for nacelle drag calculation.
+        - nacelle_k : float (constant)
+            Constant for nacelle drag calculation.
+        - nacelle_drag_unit : float
+            Unit drag of the nacelle.
+        - nacelle_drag : float
+            Total drag caused by nacelles.
+        - self.flight_vehicle.airplane.analysis_specific_options[aerosandbox.AVL] : dict
+            AVL-specific analysis options.
+        - option_method : str
+            Aerodynamics analysis method option.
+        - analysis : object
+            Aerodynamics analysis object.
+        - asb_out : dict
+            Output of the aerodynamics analysis.
+        - debug : bool
+            Flag indicating whether to print debug messages.
+        - raw_parameters : dict
+            Raw aerodynamic parameters.
+        - CD : float
+            Drag coefficient.
+        - CL : float
+            Lift coefficient.
+        - CY : float
+            Side force coefficient.
+        - Cl : float
+            Rolling moment coefficient.
+        - Cm : float
+            Pitching moment coefficient.
+        - Cn : float
+            Yawing moment coefficient.
+        - L : float
+            Lift force.
+        - D : float
+            Drag force.
+        - Y : float
+            Side force.
+        - l : float
+            Rolling moment.
+        - m : float
+            Pitching moment.
+        - n : float
+            Yawing moment.
+        """
         self.v_tas = self.atmos_model.mach2tas(alt=self.z_altitude, M=self.mach_current)
 
         self.alpha_aircraft = max(self.alpha_aircraft, -45.0)

@@ -1,39 +1,35 @@
 """________________________________________________________________________________
 
-                                   MISSION PROFILE MODULE 
+                                   MISSION PROFILE MODULE
 ___________________________________________________________________________________"""
-## This module takes in charge of the system architecture definition, in this case it is
+# This module takes in charge of the system architecture definition, in this case it is
 #  the mission to follow.
 #  The climb and descent profiles exposed at the book "Airbus: Getting to grips into
 #  aircraft performance" are taken as example.
-## missionProfile.py
-##
+# missionProfile.py
+#
 # Created:  Sep 2022, R. ROJAS CARDENAS
 #
 
-### ----------------------------------------------------------------------
-###   Imports
-### ----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+#   Imports
+# ----------------------------------------------------------------------
 
-## Generic
-from multiprocessing import Event
-from unicodedata import name
+# Generic
 import numpy as np
 
 # from operator import attrgetter
 # from ambiance import Atmosphere
 
-## CosApp
+# CosApp
 from cosapp.base import System
-from cosapp.drivers import RungeKutta, NonLinearSolver
+from cosapp.drivers import RungeKutta
 from cosapp.recorders import DataFrameRecorder
 
 # Important to define a path directory for other modules either in the enviroment or with 'sys' method.
 
-## Modules and tools
+# Modules and tools
 import amad.tools.atmosBADA as atmos
-
-speedsclass = atmos.AtmosphereAMAD()
 import amad.tools.unit_conversion as uc
 
 # import amad.disciplines.aerodynamics.tools.createAeroInterpolationCSV as aeroInterp
@@ -49,26 +45,54 @@ from amad.disciplines.performance.systems import (
 )
 
 # Import Ports from AMAD.
-from amad.disciplines.performance.ports import SegmentPort
-
 from amad.disciplines.performance.tools.missionCallback import empty_callback
+
+speedsclass = atmos.AtmosphereAMAD()
 
 
 class mission_profile(System):
-    """This profile takes into account the high speed performance:
-    - Climb , Acceleration, Cruise, Deceleration and Descent.
+    """
+    This profile takes into account the high speed performance:
+    - Climb, Acceleration, Cruise, Deceleration, and Descent.
 
-        Assumptions:
-        1) In between the final climb and the cruise segment a possible acceleration in Mach number is taken into account.
-        2) In between the first descent and the cruise segment a possible decceleration in Mach number is taken into account.
-        3) Assumption 1 and 2 are managed by an "if" guard, however a mission can be hard-coded. It has been decided to code it
-            as it is to show the flexibility of CosApp tool.
+    Assumptions:
+    - In between the final climb and the cruise segment, a possible acceleration in Mach number is taken into account.
+    - In between the first descent and the cruise segment, a possible deceleration in Mach number is taken into account.
+    - Assumption 1 and 2 are managed by an "if" guard, however, a mission can be hard-coded. It has been decided to code it as it is to show the flexibility of CosApp tool.
 
-        REMARK !!!
-
+    REMARK !!!
     """
 
     def __init__(self, *args, **kwargs):
+        """
+        Initialize an instance of the class.
+
+        Parameters
+        ----------
+        *args
+            Variable length arguments.
+        **kwargs
+            Arbitrary keyword arguments.
+
+        Attributes
+        ----------
+        flightSegments : list
+            A list to store flight segments.
+        drx : dict
+            A dictionary to store data.
+        data : list
+            A list to store data.
+        Data_to_record : list
+            A list of strings representing the data to be recorded.
+
+        Raises
+        ------
+        None
+
+        Returns
+        -------
+        None
+        """
         self.flightSegments = (
             []
         )  # Used to save all the flight Segments required during the mission.
@@ -103,11 +127,39 @@ class mission_profile(System):
         )  # Calls all arguments in init from the superior class 'system'.
 
     def setup(self, asb_aircraft_geometry: dict, mission_callback=empty_callback):
-        ### ----------------------------------------------------------------------
-        ### Flight_vehicle generation
-        ### ----------------------------------------------------------------------
+        # ----------------------------------------------------------------------
+        # Flight_vehicle generation
+        # ----------------------------------------------------------------------
 
         # Pre-generate ASB Airplane object
+        """
+        Set up the aircraft configuration for the mission.
+
+        Parameters
+        ----------
+        asb_aircraft_geometry : dict
+            A dictionary containing the geometrical properties of the aircraft.
+        mission_callback : function, optional
+            A callback function to be executed during the mission.
+
+        Returns
+        -------
+        None
+
+        Raises
+        ------
+        None
+
+        Notes
+        -----
+        This function sets up the flight vehicle and the segments of the flight mission. It also calculates the fuel capacity and sets the profile values for each segment.
+
+        References
+        ----------
+        [1] Reference 1
+        [2] Reference 2
+        ...
+        """
         generated_airplane = CreateAirplane(
             aero_geom=asb_aircraft_geometry, generate_airfoil_polars=False
         )
@@ -126,9 +178,9 @@ class mission_profile(System):
             desc="Total fuel mass needed for the mission",
         )
 
-        ### ----------------------------------------------------------------------
-        ### Mission profile definition using segment modules (children systems)
-        ### ----------------------------------------------------------------------
+        # ----------------------------------------------------------------------
+        # Mission profile definition using segment modules (children systems)
+        # ----------------------------------------------------------------------
 
         # The computation of the mission follows the order of the segments definition.
         self.add_child(
@@ -257,9 +309,9 @@ class mission_profile(System):
         for child in all_children:
             self[child].mission_callback.callback_method = mission_callback
 
-        ### ----------------------------------------------------------------------
-        ### Values definition
-        ### ----------------------------------------------------------------------
+        # ----------------------------------------------------------------------
+        # Values definition
+        # ----------------------------------------------------------------------
 
         # Constants
         self.g = 9.81  # Gravity acceleration in m/s2, to connect with constants module.
@@ -320,7 +372,7 @@ class mission_profile(System):
         self.Climb_segment_2.CAS = (
             300.0  # Desired CAS to maintain during climb segment in knots.
         )
-        self.minimum_gamma = 0.024  ##unit in radians.
+        self.minimum_gamma = 0.024  # unit in radians.
         self.Iso_Mach = 0.75  # Implicit for the first descent segment by sharing the same pulled variable.
         self.RC_ceiling = (
             uc.ft2m(300) / 60
@@ -365,9 +417,9 @@ class mission_profile(System):
         # self.Descent_segment_2.enginePerfo.rating_eng='IDLE'
         self.Descent_segment_2.CRD = -5.0
 
-        ### ----------------------------------------------------------------------
-        ### Connections between variables and ports
-        ### ----------------------------------------------------------------------
+        # ----------------------------------------------------------------------
+        # Connections between variables and ports
+        # ----------------------------------------------------------------------
 
         # Connections from climb first phase to acceleration phase(250 kt until 10000ft)
         self.connect(
@@ -531,18 +583,15 @@ class mission_profile(System):
 
         self.flightSegments.extend([self.Decelerate, self.Descent_segment_2])
 
-        ### ----------------------------------------------------------------------
-        ### Drivers definition for each segment
-        ### -----------------------------------------------------------------------
+        # ----------------------------------------------------------------------
+        # Drivers definition for each segment
+        # -----------------------------------------------------------------------
         # dt attribute is key for convergence, specially for those segments of small duration (accelerate/deccelerate)
         for segment in self.flightSegments:
             segment_driver = segment.add_driver(
                 RungeKutta(
                     name="driver_" + segment.name, time_interval=(0, 100000), dt=1
                 )
-            )
-            solver = segment_driver.add_child(
-                NonLinearSolver("solver_" + segment.name, max_iter=500, tol=0.1)
             )
 
             segment_driver.add_recorder(

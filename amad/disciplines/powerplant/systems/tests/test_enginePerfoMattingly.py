@@ -5,7 +5,57 @@ from amad.tools.unit_conversion import ft2m
 
 @pytest.fixture
 def factory():
+    """
+    Create an instance of the EnginePerfoMattingly class with given parameters.
+
+    Parameters
+    ----------
+    dISA : float
+        The deviation from the standard atmosphere in degrees Celsius.
+    Mach : float
+        The current Mach number.
+    altitude : float
+        The current altitude in meters.
+    max_thrust : float
+        The maximum thrust of the engine.
+    rating : float
+        The rating of the engine.
+    anti_ice : bool
+        Flag indicating whether anti-ice is turned on or off.
+    air_cond : bool
+        Flag indicating whether air conditioning is turned on or off.
+
+    Returns
+    -------
+    EnginePerfoMattingly
+        An instance of the EnginePerfoMattingly class initialized with the given parameters.
+    """
     def factory_impl(dISA, Mach, altitude, max_thrust, rating, anti_ice, air_cond):
+        """
+        Create an instance of the EnginePerfoMattingly class.
+
+        Parameters
+        ----------
+        dISA : float
+            The deviation from the standard atmospheric conditions.
+        Mach : float
+            The current Mach number.
+        altitude : float
+            The current altitude.
+        max_thrust : float
+            The maximum thrust of the engine.
+        rating : float
+            The rating of the engine.
+        anti_ice : bool
+            Whether the anti-icing system is enabled or not.
+        air_cond : bool
+            Whether the air conditioning system is enabled or not.
+
+        Returns
+        -------
+        EnginePerfoMattingly
+            An instance of the EnginePerfoMattingly class.
+        """
         syst = EnginePerfoMattingly(name="mattingly", altitude=altitude, dISA=dISA)
         syst.mach_current = Mach
         syst.thrust_eng = max_thrust
@@ -72,6 +122,42 @@ def test_enginePerfo_run_once(
     anti_ice,
     air_cond,
 ):
+    """
+    Test the engine performance for a single run.
+
+    Parameters
+    ----------
+    factory : function
+        The function for creating an engine model.
+    expected_THR : float
+        The expected total thrust output.
+    expected_THR_Mattingly : float
+        The expected total thrust output according to Mattingly's formula.
+    expected_CSR_Mattingly : float
+        The expected specific fuel consumption according to Mattingly's formula.
+    dISA : float
+        The deviation from standard atmospheric conditions.
+    Mach : float
+        The aircraft's Mach number.
+    altitude : float
+        The altitude at which the engine is operating.
+    max_thrust : float
+        The maximum thrust output of the engine.
+    rating : str
+        The engine's rating.
+    anti_ice : str
+        The status of the anti-ice system.
+    air_cond : str
+        The status of the air conditioning system.
+
+    Raises
+    ------
+    None
+
+    Returns
+    -------
+    None
+    """
     enginemodel = factory(dISA, Mach, altitude, max_thrust, rating, anti_ice, air_cond)
     enginemodel.run_once()
     THR = enginemodel.THR

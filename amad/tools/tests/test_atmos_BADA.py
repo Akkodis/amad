@@ -14,6 +14,27 @@ test_cases_atmos = [
 
 @pytest.mark.parametrize("disa, alt, temp, dens, p", test_cases_atmos)
 def test_AtmosphereAMAD(disa, alt, temp, dens, p):
+    """
+    Test the AtmosphereAMAD class.
+
+    Parameters
+    ----------
+    disa : float
+        The value of the DISA (offset_deg) parameter.
+    alt : float
+        The altitude at which to calculate the atmospheric properties.
+    temp : float
+        The expected air temperature in Kelvin.
+    dens : float
+        The expected air density in kilograms per cubic meter.
+    p : float
+        The expected air pressure in pascals.
+
+    Raises
+    ------
+    AssertionError
+        If any of the calculated atmospheric properties do not match the expected values.
+    """
     atmos = AtmosphereAMAD(offset_deg=disa)
 
     assert atmos.airtemp_k(alt) == pytest.approx(temp, rel=1e-6)
@@ -23,6 +44,25 @@ def test_AtmosphereAMAD(disa, alt, temp, dens, p):
 
 def test_speed_conversions():
     # test values from https://aerotoolbox.com/airspeed-conversions/
+    """
+    Test the speed conversion functions of the AtmosphereAMAD class.
+
+    This function tests the following speed conversion functions of the AtmosphereAMAD class:
+    1. mach2tas
+    2. tas2mach
+    3. tas2eas
+    4. cas2tas
+    5. tas2cas
+    6. mach2cas
+    7. cas2mach
+
+    The function asserts that the calculated results match the expected results with a specified tolerance.
+
+    Raises
+    ------
+    AssertionError
+        If any of the assert statements fail.
+    """
     disa = 10.0
     altitude = 12000.0
     mach = 0.8
@@ -57,6 +97,29 @@ test_cases_xover = [
 
 @pytest.mark.parametrize("disa, Mach, casxover, xoveralt_ref", test_cases_xover)
 def test_xoveralt(disa, Mach, casxover, xoveralt_ref):
+    """
+    Test the calculation of crossover altitude.
+
+    Parameters
+    ----------
+    disa : float
+        The temperature deviation from standard atmosphere in degrees Celsius.
+    Mach : float
+        The Mach number.
+    casxover : float
+        The calibrated airspeed at the crossover altitude in knots.
+    xoveralt_ref : float
+        The reference value for the crossover altitude in feet.
+
+    Returns
+    -------
+    None
+
+    Raises
+    ------
+    AssertionError
+        If the calculated crossover altitude is not approximately equal to the reference value.
+    """
     casxover = casxover * 0.51444  # [kt2m/s]
     atmos = AtmosphereAMAD()
     atmos.offset_deg = disa

@@ -10,20 +10,42 @@ from amad.disciplines.design.tools.liftingArea import lifting_area
 
 
 class SimpleAC(AbstractMassComponent):
-    """Mass estimation method from the SimPleAC project.
+    """
+    Mass estimation method from the SimPleAC project.
 
     Reference:
     https://github.com/peterdsharpe/AeroSandbox/blob/master/tutorial/02%20-%20Design%20Optimization/03%20-%20Aircraft%20Design%20-%20SimPleAC.ipynb
 
-    Influencing Parameters:
-        m_mto
-        r_wing_taper
-        chord_wing_root
-        v_fuel_fuse
-        r_wing_aspect
+    Parameters
+    ----------
+    m_mto : float
+        Take-off mass of the aircraft.
+    r_wing_taper : float
+        Wing taper ratio.
+    chord_wing_root : float
+        Chord length at the root of the wing.
+    v_fuel_fuse : float
+        Fuselage volume dedicated to fuel.
+    r_wing_aspect : float
+        Wing aspect ratio.
     """
 
     def setup(self):
+        """
+        Initialize the object and set up the inputs and outputs for the calculation.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
+
+        Raises
+        ------
+        None
+        """
         inward_list = [
             "m_mto",
             "r_wing_taper",
@@ -50,6 +72,22 @@ class SimpleAC(AbstractMassComponent):
 
     def compute_mass(self):
         # compute wing area
+        """
+        Compute the total mass of an aircraft.
+
+        Parameters
+        ----------
+        self : object
+            An instance of the Aircraft class.
+
+        Returns
+        -------
+        None
+
+        Raises
+        ------
+        None
+        """
         a_wing = lifting_area(self.x_wing_span, self.r_wing_taper, self.chord_wing_root)
 
         # unit conversions
@@ -72,22 +110,47 @@ class SimpleAC(AbstractMassComponent):
 
 
 class Cessna(AbstractMassComponent):
-    """Mass estimation method for GA aircraft originally from Cessna
+    """
+    Mass estimation method for GA aircraft originally from Cessna
     Applicable to small low-speed aircraft (under 200kts max speed)
 
-    Reference:
-    Roskam, J. (1989). Airplane Design: Part V. Component Weight Estimation.
+    Parameters
+    ----------
+    m_mto : float
+        Maximum takeoff mass of the aircraft.
+    r_wing_taper : float
+        Wing taper ratio.
+    chord_wing_root : float
+        Chord of the wing root.
+    n_ult : float
+        Ultimate load factor.
+    r_wing_aspect : float
+        Wing aspect ratio.
+    tech_bracing : str
+        Bracing technology used.
 
-    Influencing Parameters:
-        m_mto
-        r_wing_taper
-        chord_wing_root
-        n_ult
-        r_wing_aspect
-        tech_bracing
+    Reference
+    ---------
+    Roskam, J. (1989). Airplane Design: Part V. Component Weight Estimation.
     """
 
     def setup(self):
+        """
+        Set up the configuration.
+
+        Parameters
+        ----------
+        self : object
+            The object being configured.
+
+        Returns
+        -------
+        None
+
+        Raises
+        ------
+        None
+        """
         inward_list = [
             "m_mto",
             "r_wing_taper",
@@ -104,6 +167,22 @@ class Cessna(AbstractMassComponent):
 
     def compute_mass(self):
         # compute wing area
+        """
+        Compute the mass of an aircraft wing.
+
+        Parameters
+        ----------
+        self : object
+            The instance of the class that contains the input parameters.
+
+        Returns
+        -------
+        None
+
+        Raises
+        ------
+        None
+        """
         a_wing = lifting_area(self.x_wing_span, self.r_wing_taper, self.chord_wing_root)
 
         # unit conversions
@@ -132,25 +211,41 @@ class Cessna(AbstractMassComponent):
 
 
 class Torenbeek(AbstractMassComponent):
-    """Mass estimation method for GA and transport aircraft.
+    """
+    Mass estimation method for GA and transport aircraft.
     Applicable to small low-speed aircraft (<12,500 lb GW) or
     transport aircraft (>12,500lb GW)
 
     Reference:
-    Torenbeek, E. (1982). Synthesis of subsonic airplane design
+    - Torenbeek, E. (1982). Synthesis of subsonic airplane design
 
     Influencing Parameters:
-        m_mto
-        r_wing_taper
-        chord_wing_root
-        n_ult
-        x_wing_span
-        delta_wing_sweep
-        t_wing_root_chord
-        m_mzf
+    - m_mto
+    - r_wing_taper
+    - chord_wing_root
+    - n_ult
+    - x_wing_span
+    - delta_wing_sweep
+    - t_wing_root_chord
+    - m_mzf
     """
 
     def setup(self):
+        """
+        Set up the inward and outward variables for the class.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
+
+        Raises
+        ------
+        None
+        """
         inward_list = [
             "m_mto",
             "r_wing_taper",
@@ -170,6 +265,22 @@ class Torenbeek(AbstractMassComponent):
 
     def compute_mass(self):
         # compute wing area
+        """
+        Compute the mass of an aircraft wing.
+
+        Parameters
+        ----------
+        self : object
+            The object containing the input parameters for the mass computation.
+
+        Returns
+        -------
+        None
+
+        Raises
+        ------
+        None
+        """
         a_wing = lifting_area(self.x_wing_span, self.r_wing_taper, self.chord_wing_root)
 
         # unit conversions
@@ -213,30 +324,54 @@ class Torenbeek(AbstractMassComponent):
 
 
 class WingMass(BaseMassClass):
-    """Wing Mass model
+    """
+    Wing Mass model
 
-    Model List:
-    ----------------------
-    - name [str]: System name
-    - model [str]: Computation algorithm. Options are:
-        - simpleac: Model proposed by Hoburg et al
-        - cessna: Cessna
-        - torenbeek: Egbeert Torenbeek
-        - specified: Specified Mass by user
+    Parameters
+    ----------
+    name : str
+        System name
+    model : str
+        Computation algorithm. Options are:
+            - simpleac: Model proposed by Hoburg et al
+            - cessna: Cessna
+            - torenbeek: Egbeert Torenbeek
+            - specified: Specified Mass by user
 
-    Children:
-    ---------
-    - model:
+    Attributes
+    ----------
+    model : AbstractMassComponent
         Concrete specialization of `AbstractMassComponent`.
         May possess model-specific parameters, as inwards.
     """
 
     def setup(self, model: str, **parameters):
+        """
+        Set up the model with the given parameters.
+
+        Parameters
+        ----------
+        model : str
+            The name of the model to set up.
+        **parameters : keyword arguments
+            Additional parameters to configure the model.
+
+        Raises
+        ------
+        TypeError
+            If an unsupported parameter is provided.
+
+        Notes
+        -----
+        This method overrides the setup method in the parent class.
+        """
         super().setup(model=model, **parameters)
 
     @classmethod
     def models(cls) -> Dict[str, type]:
-        """Dictionary of available models"""
+        """
+        Dictionary of available models.
+        """
         return {
             "simpleac": SimpleAC,
             "cessna": Cessna,

@@ -5,11 +5,43 @@ from amad.disciplines.design.ports import AsbGeomPort
 
 
 class WingPosition(System):
-    """This system computes the position of the wing, using the aerodynamic center
-    and design rules to position the wing correctly
+    """
+    Compute the position of the wing using the aerodynamic center and design rules.
+
+    Parameters
+    ----------
+    None
+
+    Returns
+    -------
+    None
     """
 
     def setup(self):
+        """
+        Set up the inputs, outputs, and properties of the class.
+
+        Parameters
+        ----------
+        self : object
+            The instance of the class.
+
+        Returns
+        -------
+        None
+
+        Notes
+        -----
+        - `add_input` adds an input to the class.
+        - `add_inward` adds an inward connection to the class.
+        - `add_outward` adds an outward connection to the class.
+        - `add_property` adds a property to the class.
+        - `desc` is a description of the input or output.
+        - `unit` is the unit of the input or output.
+        - `dtype` is the data type of the input or output.
+        - `CreateAirplane` is a class that creates an airplane.
+        - `generate_airfoil_polars` is a boolean indicating whether to generate airfoil polars or not.
+        """
         self.add_input(AsbGeomPort, "geom_in")
 
         # self.add_inward('x_wing_le', desc='Distance from nose to wing leading edge', unit='m')
@@ -25,10 +57,46 @@ class WingPosition(System):
         )
 
     def clear_cache(self):
+        """
+        Clear the cache of the object.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
+
+        Raises
+        ------
+        None
+        """
         self.x_ac_cache.clear()
 
     def compute(self):
         # create a checksum from the geometry
+        """
+        Compute the position of the wing leading edge relative to the center of gravity.
+
+        This function calculates the position of the wing leading edge relative to the center of gravity based on the input aircraft geometry.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
+
+        Prints
+        ------
+        The calculated position of the wing leading edge, the x-coordinate of the aerodynamic center, the x-coordinate of the wing leading edge, and the x-coordinate of the fuselage.
+
+        Raises
+        ------
+        None
+        """
         check_string = str(self.geom_in.asb_aircraft_geometry)
         checksum = zlib.adler32(check_string.encode("utf-8"))
 

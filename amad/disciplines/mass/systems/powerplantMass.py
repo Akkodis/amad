@@ -9,19 +9,46 @@ from amad.tools.unit_conversion import lb2kg, n2lb, m2ft
 
 
 class ModRaymer(AbstractMassComponent):
-    """Engine Mass estimation method for modern (>1980) turbofan engines
+    """
+    Engine Mass estimation method for modern (>1980) turbofan engines
     Raymer method is used with coefficients re-optimized.
     FLOPS methods are used for engine control and starting masses
 
-    Influencing Parameters:
-        r_bypass
-        n_eng
-        thrust_eng
-        mach_mo
-        d_nacelle
+    Parameters
+    ----------
+    r_bypass : float
+        The bypass ratio of the engine.
+    n_eng : int
+        The number of engines.
+    thrust_eng : float
+        The thrust of each engine.
+    mach_mo : float
+        The Mach number.
+    d_nacelle : float
+        The diameter of the nacelle.
     """
 
     def setup(self):
+        """
+        Set up the class instance with predefined parameters and lists.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
+
+        Notes
+        -----
+        This function is intended to be called during the instantiation of the class.
+
+        Example
+        -------
+        >>> obj = ClassName()
+        >>> obj.setup()
+        """
         inward_list = [
             "r_bypass",
             "n_eng",
@@ -42,6 +69,30 @@ class ModRaymer(AbstractMassComponent):
 
     def compute_mass(self):
         # calculate engine mass
+        """
+        Compute the total mass of an engine system.
+
+        Parameters
+        ----------
+        self : object
+            The instance of the `EngineSystem` class.
+
+        Returns
+        -------
+        None
+
+        Notes
+        ------
+        This function updates the following attributes of the `EngineSystem` instance:
+        - `m_eng`: Mass of the engine itself.
+        - `m_eng_ctrl`: Mass of the engine control system.
+        - `m_eng_starter`: Mass of the engine starter.
+        - `total_mass`: Total mass of the engine system.
+
+        Raises
+        ------
+        None
+        """
         self.m_eng = (
             self.Eng_K_1
             * ((self.thrust_eng / 1000) ** self.Eng_K_2)
@@ -61,28 +112,52 @@ class ModRaymer(AbstractMassComponent):
 
 
 class PowerplantMass(BaseMassClass):
-    """Engine mass model. Estimates only the engine part
+    """
+    Engine mass model. Estimates only the engine part
 
-    Model List:
-    ----------------------
-    - name [str]: System name
-    - model [str]: Computation algorithm. Options are:
-        - cairns: Statistical model using thrust and bypass ratio
-        - specified: User-specified mass
+    Parameters
+    ----------
+    name : str
+        System name
+    model : str
+        Computation algorithm. Options are:
+            - cairns: Statistical model using thrust and bypass ratio
+            - specified: User-specified mass
 
-    Children:
-    ---------
-    - model:
+    Children
+    --------
+    model : AbstractMassComponent
         Concrete specialization of `AbstractMassComponent`.
         May possess model-specific parameters, as inwards.
     """
 
     def setup(self, model: str, **parameters):
+        """
+        Set up the model with the given parameters.
+
+        Parameters
+        ----------
+        model : str
+            The name of the model to set up.
+
+        **parameters : dict
+            Additional parameters to pass to the setup function.
+
+        Raises
+        ------
+        None
+
+        Returns
+        -------
+        None
+        """
         super().setup(model=model, **parameters)
 
     @classmethod
     def models(cls) -> Dict[str, type]:
-        """Dictionary of available models"""
+        """
+        Dictionary of available models.
+        """
         return {
             "mod-raymer": ModRaymer,
             "specified": SpecifiedMass,

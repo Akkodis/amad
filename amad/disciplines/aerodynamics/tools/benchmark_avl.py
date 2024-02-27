@@ -8,6 +8,22 @@ from amad.disciplines.aerodynamics.tools.createFlightVehicle import CreateAirpla
 
 
 def run_benchmark_avl(avl_location):
+    """
+    Run a benchmark for AVL analysis on an airplane.
+
+    Parameters
+    ----------
+    avl_location : str
+        The location of the AVL executable.
+
+    Returns
+    -------
+    None
+
+    Raises
+    ------
+    None
+    """
     generated_airplane = CreateAirplane(aero_geom=airplane_geom())
     generated_airplane.generate()
 

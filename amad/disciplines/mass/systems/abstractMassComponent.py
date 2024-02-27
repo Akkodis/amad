@@ -4,16 +4,32 @@ from amad.disciplines.mass.ports import MassPort
 
 
 class AbstractMassComponent(System):
-    """A system which has a standard mass output port
+    """
+    A system which has a standard mass output port
     and an abstract mass computation method.
     Inward parameters are input automatically from a configuration file
-
     """
 
     def setup(
         self, inward_list: list[str]
     ):  # list[dict] if we want to pass a list of dict instead
         # mass 'port'
+        """
+        Set up the object with the specified inward list.
+
+        Parameters
+        ----------
+        inward_list : list[str]
+            A list of strings representing the names of the inward values to be added.
+
+        Returns
+        -------
+        None
+
+        Raises
+        ------
+        None
+        """
         self.add_output(MassPort, "total")
 
         numerics = (int, float, list)
@@ -502,9 +518,28 @@ class AbstractMassComponent(System):
 
     @abc.abstractmethod
     def compute_mass(self) -> None:
-        """Compute the mass of the component"""
+        """
+        Compute the mass of the component.
+        """
         pass
 
     def compute(self):
+        """
+        Compute the total mass.
+
+        This method calculates the total mass by first calling the `compute_mass` method to calculate the mass, and then assigns the resulting value to the `total.mass` attribute.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
+
+        Raises
+        ------
+        None
+        """
         self.compute_mass()
         self.total.mass = self.total_mass

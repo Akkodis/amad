@@ -4,6 +4,14 @@ from amad.disciplines.mass.systems import AircraftMass
 
 
 def test_ac_mass_runonce():
+    """
+    Test the `AircraftMass` class by running a series of calculations and comparing the results to expected values.
+
+    Raises
+    ------
+    AssertionError
+        If any of the calculated masses do not match the expected values.
+    """
     acmass = AircraftMass("acmass")
     acmass.type_aircraft = "transport"
     acmass.x_fuse = 38.08

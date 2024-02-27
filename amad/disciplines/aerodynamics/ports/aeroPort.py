@@ -7,6 +7,48 @@ class AeroPort(Port):
     """
 
     def setup(self):
+        """
+        Set up the variables for an aerodynamic analysis.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
+
+        Variables
+        ---------
+        L : float
+            Lift force (default value: 1.0 N).
+        D : float
+            Drag force (default value: 1.0 N).
+        Y : float
+            Lateral aerodynamic force (default value: 1.0 N).
+        l : float
+            Aerodynamic moment (roll axis) (default value: 1.0 nm).
+        m : float
+            Aerodynamic moment (pitch axis) (default value: 1.0 nm).
+        n : float
+            Aerodynamic moment (yaw axis) (default value: 1.0 nm).
+        CD : float
+            Drag coefficient (default value: 1.0).
+        CL : float
+            Lift coefficient (default value: 1.0).
+        CY: float
+            Lateral coefficient (default value: 1.0).
+        Cl : float
+            Aerodynamic moment coefficient (roll axis) (default value: 1.0).
+        Cm : float
+            Aerodynamic moment coefficient (pitch axis) (default value: 1.0).
+        Cn : float
+            Aerodynamic moment coefficient (yaw axis) (default value: 1.0).
+
+        Raises
+        ------
+        None
+        """
         self.add_variable("L", 1.0, unit="N", desc="Lift force")
         self.add_variable("D", 1.0, unit="N", desc="Drag force")
         self.add_variable("Y", 1.0, unit="N", desc="Lateral aerodynamic force")

@@ -1,11 +1,15 @@
 def pulling_filter(inwards, outwards, exceptions=[]):
-    """Generates a filtered list of parameters based on the following rules:
+    """
+    Generates a filtered list of parameters based on the following rules:
     `Outwards` with the suffix `_out`
     All `inwards` except for those with corresponding `outwards` suffixed with `_out`
 
-    Args:
-        inwards: CoSApp list of inwards (`system_name.inwards`)
-        outwards:  CoSApp list of outwards (`system_name.outwards`)
+    Parameters
+    ----------
+    inwards : list
+        CoSApp list of inwards (`system_name.inwards`)
+    outwards : list
+        CoSApp list of outwards (`system_name.outwards`)
     """
 
     # outwards where _out is present

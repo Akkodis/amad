@@ -6,18 +6,42 @@ from amad.tools.unit_conversion import lb2kg, sqm2sqft, m2ft, ms2kt
 
 
 class FLOPS(AbstractMassComponent):
-    """FLOPS Fuselage Mass estimation method for various aircraft
+    """
+    FLOPS Fuselage Mass estimation method for various aircraft
 
-    Influencing Parameters:
-        x_fuse
-        w_fuse
-        h_fuse
-        n_eng_fuse
-        tech_cargo_floor
-        n_fuse
+    Parameters
+    ----------
+    x_fuse : float
+        Description of parameter x_fuse.
+    w_fuse : float
+        Description of parameter w_fuse.
+    h_fuse : float
+        Description of parameter h_fuse.
+    n_eng_fuse : int
+        Description of parameter n_eng_fuse.
+    tech_cargo_floor : str
+        Description of parameter tech_cargo_floor.
+    n_fuse : int
+        Description of parameter n_fuse.
     """
 
     def setup(self):
+        """
+        Sets up the object with a list of inward parameters and adds additional outward parameters.
+
+        Parameters
+        ----------
+        self : object
+            The object being set up.
+
+        Returns
+        -------
+        None
+
+        Raises
+        ------
+        None
+        """
         inward_list = [
             "x_fuse",
             "w_fuse",
@@ -35,6 +59,21 @@ class FLOPS(AbstractMassComponent):
 
     def compute_mass(self):
         # calculate intermediates
+        """
+        Compute the mass of the fuselage.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
+
+        Raises
+        ------
+        None
+        """
         self.coeff_cargo = 1.0 if self.tech_cargo_floor == "True" else 0.0
         self.dav = (m2ft(length=self.h_fuse) + m2ft(length=self.w_fuse)) / 2
 
@@ -50,9 +89,10 @@ class FLOPS(AbstractMassComponent):
 
 
 class Torenbeek(AbstractMassComponent):
-    """Torenbeek Fuselage Mass estimation method for transport aircraft
+    """
+    Torenbeek Fuselage Mass estimation method for transport aircraft
 
-    Influencing Parameters:
+    Parameters:
         a_fuselage
         x_wing_tail_chord
         w_fuse
@@ -63,6 +103,17 @@ class Torenbeek(AbstractMassComponent):
     """
 
     def setup(self):
+        """
+        Set up the object and add inward and outward attributes.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
+        """
         inward_list = [
             "a_fuselage",
             "x_fuse",
@@ -82,6 +133,26 @@ class Torenbeek(AbstractMassComponent):
 
     def compute_mass(self):
         # unit conversions
+        """
+        Compute the mass of an aircraft.
+
+        Parameters
+        ----------
+        self : object
+            The object representing the aircraft.
+
+        Returns
+        -------
+        None
+
+        Notes
+        -----
+        This function updates the `m_fuselage` and `total_mass` attributes of the input object.
+
+        Raises
+        ------
+        None
+        """
         self.a_fuselage = sqm2sqft(self.a_fuselage)
         x_wing_tail_chord = m2ft((self.x_fuse / 2) - 1.005)
         self.w_fuse = m2ft(self.w_fuse)
@@ -108,27 +179,54 @@ class Torenbeek(AbstractMassComponent):
 
 
 class FuselageMass(BaseMassClass):
-    """Fuselage Mass model
+    """
+    Fuselage Mass model
 
-    Constructor arguments:
-    ----------------------
-    - name [str]: System name
-    - model [str]: Computation algorithm. Options are:
-        - torenbeek: Egbeert Torenbeek
+    Parameters
+    ----------
+    name : str
+        System name
+    model : str
+        Computation algorithm. Options are:
+            torenbeek: Egbeert Torenbeek
 
-    Children:
-    ---------
-    - model:
+    Children
+    --------
+    model : AbstractMassComponent
         Concrete specialization of `AbstractMassComponent`.
         May possess model-specific parameters, as inwards.
     """
 
     def setup(self, model: str, **parameters):
+        """
+        Set up the model with the specified parameters.
+
+        Parameters
+        ----------
+        model : str
+            The name of the model to set up.
+        **parameters : keyword arguments
+            Additional parameters to pass to the model setup.
+
+        Returns
+        -------
+        None
+
+        Notes
+        -----
+        This method calls the `setup` method of the parent class to perform the setup. The `model` parameter is required, and any additional parameters are passed as keyword arguments.
+
+        Examples
+        --------
+        >>> setup("linear_regression", num_epochs=10, learning_rate=0.001)
+        """
         super().setup(model=model, **parameters)
 
     @classmethod
     def models(cls) -> Dict[str, type]:
-        """Dictionary of available models"""
+        """
+        Dictionary of available models
+        """
         return {
             "torenbeek": Torenbeek,
             "flops": FLOPS,

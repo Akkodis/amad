@@ -7,19 +7,24 @@ class AtmosphereAMAD:
     This is based on BADA 3.8 User Manual Ch. 3.1
 
     Speed Conversions reference:
-        https://aerotoolbox.com/airspeed-conversions/
+        `Airspeed Conversions <https://aerotoolbox.com/airspeed-conversions/>`_
 
     Atmosphere Data Reference:
-        https://www.digitaldutch.com/atmoscalc/
+        `Atmosphere Calculator <https://www.digitaldutch.com/atmoscalc/>`_
     """
 
     def __init__(self, alt=0.0, offset_deg=0, alt_trop=11000.0):
-        """AMAD ISA Atmosphere model object based on BADA guide.
+        """
+        AMAD ISA Atmosphere model object based on BADA guide.
 
-        Args:
-            alt (float, optional): Altitude [m]. Defaults to 0..
-            offset_deg (float, optional): delta ISA temp [K]. Defaults to 0.
-            alt_trop (float, optional): Tropopause altitude [m]. Defaults to 11000..
+        Parameters
+        ----------
+        alt : float, optional
+            Altitude [m]. Defaults to 0..
+        offset_deg : float, optional
+            Delta ISA temp [K]. Defaults to 0.
+        alt_trop : float, optional
+            Tropopause altitude [m]. Defaults to 11000..
         """
         self.alt = alt
         self.dISA = offset_deg
@@ -49,13 +54,18 @@ class AtmosphereAMAD:
         )
 
     def airtemp_k(self, alt):
-        """ISA air temperature in K as function of altitude
+        """
+        ISA air temperature in K as function of altitude.
 
-        Args:
-            alt (float): altitude [m]
+        Parameters
+        ----------
+        alt : float
+            Altitude [m].
 
-        Returns:
-            float: temperature [K]
+        Returns
+        -------
+        float
+            Temperature [K].
         """
         if alt < self.H_trop:
             T = self.T0 + self.dISA + self.beta_t * alt
@@ -64,13 +74,18 @@ class AtmosphereAMAD:
         return T
 
     def airpress_pa(self, alt):
-        """ISA air pressure in Pa as function of altitude
+        """
+        ISA air pressure in Pa as function of altitude.
 
-        Args:
-            alt (float): altitude [m]
+        Parameters
+        ----------
+        alt : float
+            Altitude in meters.
 
-        Returns:
-            float: pressure [Pa]
+        Returns
+        -------
+        float
+            Pressure in Pascal (Pa).
         """
         T = self.airtemp_k(alt)
         if alt < self.H_trop:
@@ -83,13 +98,18 @@ class AtmosphereAMAD:
         return p
 
     def airdens_kgpm3(self, alt):
-        """ISA air density [kg/m**3] as function of altitude
+        """
+        Calculate the ISA air density [kg/m**3] as a function of altitude.
 
-        Args:
-            alt (float): altitude [m]
+        Parameters
+        ----------
+        alt : float
+            Altitude [m].
 
-        Returns:
-            float: density [kg/m**3]
+        Returns
+        -------
+        float
+            Density [kg/m**3].
         """
         T = self.airtemp_k(alt)
         p = self.airpress_pa(alt)
@@ -97,83 +117,118 @@ class AtmosphereAMAD:
         return density
 
     def vsound_mps(self, alt):
-        """Speed of Sound [m/s] as function pf altitude
+        """
+        Speed of Sound [m/s] as function pf altitude
 
-        Args:
-            alt (float): altitude [m]
+        Parameters
+        ----------
+        alt : float
+            altitude [m]
 
-        Returns:
-            float: Speed of sound [m/s]
+        Returns
+        -------
+        float
+            Speed of sound [m/s]
         """
         T = self.airtemp_k(alt)
         speedofsound = math.sqrt(self.kappa * self.R * T)
         return speedofsound
 
     def tas2mach(self, tas, alt):
-        """Speed conversion CAS [m/s] to MA [-] for given altitude [m]
+        """
+        Speed conversion CAS [m/s] to MA [-] for given altitude [m]
 
-        Args:
-            tas (float): speed TAS [m/s]
-            alt (float): altitude [m]
+        Parameters
+        ----------
+        tas : float
+            Speed TAS [m/s]
+        alt : float
+            Altitude [m]
 
-        Returns:
-            float: Mach speed [-]
+        Returns
+        -------
+        float
+            Mach speed [-]
         """
         a = self.vsound_mps(alt)
         mach = tas / a
         return mach
 
     def mach2tas(self, M, alt):
-        """Speed conversion MA to TAS for given altitude
+        """
+        Speed conversion MA to TAS for given altitude
 
-        Args:
-            M (float): Mach speed [-]
-            alt (float): altitude [m]
+        Parameters
+        ----------
+        M : float
+            Mach speed [-]
+        alt : float
+            altitude [m]
 
-        Returns:
-            float: speed TAS [m/s]
+        Returns
+        -------
+        float
+            speed TAS [m/s]
         """
         a = self.vsound_mps(alt)
         tas = M * a
         return tas
 
     def eas2tas(self, eas, alt):
-        """Speed conversion EAS to TAS for given altitude
+        """
+        Speed conversion EAS to TAS for given altitude.
 
-        Args:
-            eas (float): speed EAS [m/s]
-            alt (float): altitude [m]
+        Parameters
+        ----------
+        eas : float
+            Speed EAS [m/s].
+        alt : float
+            Altitude [m].
 
-        Returns:
-            float: Speed TAS [m/s]
+        Returns
+        -------
+        float
+            Speed TAS [m/s].
         """
         rho = self.airdens_kgpm3(alt)
         tas = eas * math.sqrt(self.rho0 / rho)
         return tas
 
     def tas2eas(self, tas, alt):
-        """Speed conversion TAS to EAS for given altitude
+        """
+        Speed conversion TAS to EAS for given altitude
 
-        Args:
-            tas (float): speed TAS [m/s]
-            alt (float): altitude [m]
+        Parameters
+        ----------
+        tas : float
+            speed TAS [m/s]
+        alt : float
+            altitude [m]
 
-        Returns:
-            float: speed EAS [m/s]
+        Returns
+        -------
+        float
+            speed EAS [m/s]
         """
         rho = self.airdens_kgpm3(alt)
         eas = tas * math.sqrt(rho / self.rho0)
         return eas
 
     def cas2tas(self, cas, alt):
-        """Speed conversion CAS to TAS for given altitude
+        """
+        Speed conversion CAS to TAS for given altitude
 
-        Args:
-            cas (float): speed CAS [m/s]
-            alt (float): altitude [m]
+        Parameters
+        ----------
+        cas : float
+            Speed CAS [m/s]
+        alt : float
+            Altitude [m]
 
-        Returns:
-            float: speed TAS [m/s]
+        Returns
+        -------
+        float
+            Speed TAS [m/s]
         """
         rho = self.airdens_kgpm3(alt)
         p = self.airpress_pa(alt)
@@ -184,14 +239,20 @@ class AtmosphereAMAD:
         return tas
 
     def tas2cas(self, tas, alt):
-        """Speed conversion TAS to CAS for given altitude
+        """
+        Speed conversion TAS to CAS for given altitude
 
-        Args:
-            tas(float): speed TAS [m/s]
-            alt (float): altitude [m]
+        Parameters
+        ----------
+        tas : float
+            Speed TAS [m/s]
+        alt : float
+            Altitude [m]
 
-        Returns:
-            float: speed CAS [m/s]
+        Returns
+        -------
+        float
+            Speed CAS [m/s]
         """
         rho = self.airdens_kgpm3(alt)
         p = self.airpress_pa(alt)
@@ -202,50 +263,68 @@ class AtmosphereAMAD:
         return cas
 
     def mach2cas(self, M, alt):
-        """Speed conversion Mach to CAS for given altitude
+        """
+        Speed conversion Mach to CAS for given altitude
 
-        Args:
-            M (float): Mach speed [-]
-            alt (float): altitude [m]
+        Parameters
+        ----------
+        M : float
+            Mach speed [-]
+        alt : float
+            altitude [m]
 
-        Returns:
-            float: speed CAS [m/s]
+        Returns
+        -------
+        float
+            Speed CAS [m/s]
         """
         tas = self.mach2tas(M, alt)
         cas = self.tas2cas(tas, alt)
         return cas
 
     def cas2mach(self, cas, alt):
-        """Speed conversion CAS to Mach for given altitude
+        """
+        Speed conversion CAS to Mach for given altitude.
 
-        Args:
-            cas (float): speed CAS [m/s]
-            alt (float): altitude [m]
+        Parameters
+        ----------
+        cas : float
+            Speed CAS [m/s]
+        alt : float
+            Altitude [m]
 
-        Returns:
-            float: Mach speed [-]
+        Returns
+        -------
+        float
+            Mach speed [-]
         """
         tas = self.cas2tas(cas, alt)
         M = self.tas2mach(tas, alt)
         return M
 
     def crossoveralt(self, cas, mach):
-        """Calculate crossover altitude for given CAS and Mach number.
+        """
+        Calculate crossover altitude for given CAS and Mach number.
 
-            Calculates the altitude where the given CAS and Mach values
-            correspond to the same true airspeed.
+        Calculates the altitude where the given CAS and Mach values
+        correspond to the same true airspeed.
 
-            (BADA User Manual 3.12, p. 12)
+        (BADA User Manual 3.12, p. 12)
 
-            Reference:
-            http://www.hochwarth.com/misc/AviationCalculator.html
+        Reference:
+        http://www.hochwarth.com/misc/AviationCalculator.html
 
-        Args:
-            cas (float): Calibrated airspeed [m/s]
-            mach (float): Mach number [-]
+        Parameters
+        ----------
+        cas : float
+            Calibrated airspeed [m/s]
+        mach : float
+            Mach number [-]
 
-        Returns:
-            float: Altitude [m]
+        Returns
+        -------
+        float
+            Altitude [m]
         """
 
         # Delta: pressure ratio at the transition altitude

@@ -1,18 +1,19 @@
+![AKKODIS](docs/source/akkodis.png)
 # AMAD - AKKODIS MDAO Aircraft Demonstrator ✈︎
-`AMAD` is a multi disciplinary design analysis and optimization (MDAO) tool kit for aircraft optimization.
+`AMAD` is a multidisciplinary design analysis and optimization (MDAO) tool kit for aircraft optimization.
 The initial version covers a conventional aircraft example.
-The optimization and multi dsisciplinary approach is based on the [CoSApp](https://gitlab.com/cosapp/cosapp) environment.
+The optimization and multidsisciplinary approach is based on the [CoSApp](https://gitlab.com/cosapp/cosapp) environment.
 ## Implemented Disciplines
 - Aircraft Geometry
 - Aerodynamics
-- Aircradft Mass estimation (Raymer, Torenbeek)
+- Aircraft Mass estimation (Raymer, Torenbeek)
 - Turbofan Engine (Mattingly)
 - Mission Performance
 - Support Routines (ISA Atmosphere, Unit Conversions, etc.)
 
 ## External optional dependencies
-- AVL for aero computation: https://web.mit.edu/drela/Public/web/avl/
-- XFOIL for airfoil computation: https://web.mit.edu/drela/Public/web/xfoil/
+- [AVL](https://web.mit.edu/drela/Public/web/avl) for aero computation
+- [XFOIL](https://web.mit.edu/drela/Public/web/xfoil) for airfoil computation
 
 ## Included Python Packages
 - AeroSandbox: https://github.com/peterdsharpe/AeroSandbox
@@ -20,3 +21,13 @@ The optimization and multi dsisciplinary approach is based on the [CoSApp](https
 
 ## Example demo notebooks
 Example and demo jupyter notebooks for different subjects are available in the `amad/demo/notebooks` folder.
+
+
+
+## Contributors
+Peter CAIRNS
+<br> Rafael Rojas CARDENAS
+<br> André HOCHSCHULZ
+
+## Contact
+amad@akkodis.com

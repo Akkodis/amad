@@ -17,6 +17,28 @@ from amad.tools.atmosBADA import AtmosphereAMAD
 
 
 class AeroCalculateAVL(BaseAeroCalculator):
+    """
+    A class representing an AeroCalculateAVL object.
+
+    Parameters
+    ----------
+    asb_aircraft_geometry : dict
+        Dictionary containing the aircraft geometry information.
+    atmos_model : AtmosphereAMAD, optional
+        An instance of the AtmosphereAMAD class representing the atmosphere model for the calculations. Default is AtmosphereAMAD().
+    init_altitude : float, optional
+        Initial altitude used for the calculations. Default is 0.0.
+    option_optimization : bool, optional
+        Option to enable optimization. Default is True.
+    debug : bool, optional
+        Option to enable debugging. Default is False.
+    avl_command : str, optional
+        The command to run AVL. Default is 'avl'.
+    avl_keys : str, optional
+        The keystrokes to send to AVL. Default is None.
+    working_directory : str, optional
+        The working directory for the AVL calculations. Default is None.
+    """
     def setup(
         self,
         asb_aircraft_geometry: dict,
@@ -28,6 +50,43 @@ class AeroCalculateAVL(BaseAeroCalculator):
         avl_keys=None,
         working_directory=None,
     ):
+        """
+        Set up the AVL analysis for an aircraft.
+
+        Parameters
+        ----------
+        asb_aircraft_geometry : dict
+            Dictionary containing the geometry of the aircraft.
+
+        atmos_model : AtmosphereAMAD, optional
+            Object representing the atmospheric model. Default is AtmosphereAMAD().
+
+        init_altitude : float, optional
+            Initial altitude value. Default is 0.0.
+
+        option_optimization : bool, optional
+            Flag indicating whether to perform optimization. Default is True.
+
+        debug : bool, optional
+            Flag indicating whether to enable debugging. Default is False.
+
+        avl_command : str, optional
+            Command used to execute AVL. Default is 'avl'.
+
+        avl_keys : str, optional
+            String containing the AVL keystrokes. Default is None.
+
+        working_directory : str, optional
+            Directory to store AVL files. If not provided, a temporary directory is created.
+
+        Raises
+        ------
+        None
+
+        Returns
+        -------
+        None
+        """
         self.add_input(AsbGeomPort, "geom_in")
         self.add_outward("asb_geometry_internal", asb_aircraft_geometry)
 
@@ -76,6 +135,35 @@ class AeroCalculateAVL(BaseAeroCalculator):
 
     def __create_avl_runfile(self, run_data: dict):
         # creates an AVL run file text content (with multiple cases if provided)
+        """
+        Create a AVL run file.
+
+        Parameters
+        ----------
+        run_data : dict
+            A dictionary containing the run data. The keys are indices and the values are dictionaries with the following keys:
+                - 'altitude': float, the altitude of the run case.
+                - 'Mach': float, the Mach number of the run case.
+                - 'alpha': float, the alpha value of the run case.
+                - 'beta': float, the beta value of the run case.
+
+        Returns
+        -------
+        str
+            The text of the AVL run file.
+
+        Raises
+        ------
+        None
+
+        Notes
+        -----
+        This function calculates various parameters based on the input run data and constructs an AVL run file.
+        The run file contains information about the run cases, such as the alpha, beta, Mach number, velocity, density,
+        nacelle drag, and gravitational acceleration.
+
+        If the debug flag is set to True, the function also writes the raw parameters to a file named 'avl_raw_params.txt'.
+        """
         runfile = []
         header = "---------------------------------------------"
 
@@ -126,6 +214,26 @@ class AeroCalculateAVL(BaseAeroCalculator):
 
     def __create_run_data(self):
         # populate an array of input cases
+        """
+        Create run data for the object.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
+
+        Notes
+        -----
+        This function creates run data for the object using the provided attributes.
+        The data is stored in the object's attributes: raw_parameters and run_data.
+        raw_parameters is a dictionary that contains all possible combinations of values
+        for the attributes: alpha_aircraft, beta_aircraft, z_altitude, mach_current.
+        run_data is a dictionary that contains a subset of raw_parameters, grouped
+        into sub-dictionaries with a maximum number of cases defined by max_avl_cases.
+        """
         axes = {
             "alpha": self.alpha_aircraft,
             "beta": self.beta_aircraft,
@@ -151,12 +259,25 @@ class AeroCalculateAVL(BaseAeroCalculator):
 
         for h, i in enumerate(range(0, len(keys), self.max_avl_cases)):
             final_data[h] = {
-                k: run_data_dict[k] for k in keys[i : i + self.max_avl_cases]
+                k: run_data_dict[k] for k in keys[i: i + self.max_avl_cases]
             }
 
         self.run_data = final_data
 
     def __to_list(self, aero_param):
+        """
+        Converts a single value or a list to a Python list.
+
+        Parameters
+        ----------
+        aero_param : any
+            A single value or a list.
+
+        Returns
+        -------
+        list
+            A Python list representation of the input value. If the input is already a list, it is returned as is.
+        """
         if type(aero_param) is not list:
             return [aero_param]
         else:
@@ -164,10 +285,69 @@ class AeroCalculateAVL(BaseAeroCalculator):
 
     def __create_aircraft_file(self):
         # return aircraft txt
+        """
+        Create a file for the aircraft.
+
+        This method is a private method and is only used internally. It creates a file for storing information related to the aircraft.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
+
+        Raises
+        ------
+        None
+        """
         pass
 
     def __process_avl_output(self, avl_compute_data: str, n_runs=1):
         # loop thru output text and extract parameter values
+        """
+        Process AVL output data and extract relevant parameters.
+
+        Parameters
+        ----------
+        avl_compute_data : str
+            AVL compute data as a string.
+        n_runs : int, optional
+            The number of runs to process. Default is 1.
+
+        Raises
+        ------
+        ValueError
+            If the run case is not found in the compute data.
+
+        Returns
+        -------
+        None
+
+        Notes
+        -----
+        This method assumes that the AVL compute data follows a specific format. It searches for specific keys in the data and extracts the corresponding values.
+
+        The extracted parameters are stored in the `self.raw_parameters` attribute, which is a list of dictionaries. Each dictionary represents the parameter values for a specific run.
+
+        The following parameters are extracted:
+        - Alpha (alpha-res): Angle of attack in degrees.
+        - CLtot (CL): Total lift coefficient.
+        - CDtot (CD): Total drag coefficient.
+        - CYtot (CY): Total side force coefficient.
+        - Cltot (Cl): Total rolling moment coefficient.
+        - Cmtot (Cm): Total pitching moment coefficient.
+        - Cntot (Cn): Total yawing moment coefficient.
+
+        Additionally, the following derived parameters are calculated using the extracted values:
+        - L: Lift force.
+        - Y: Side force.
+        - D: Drag force.
+        - l_b: Rolling moment around body-fixed x-axis (longitudinal axis).
+        - m_b: Pitching moment around body-fixed y-axis (transverse axis).
+        - n_b: Yawing moment around body-fixed z-axis (vertical axis).
+        """
         pos_res = 0
         keys = {  # could be a user input (opt)
             "Alpha": "alpha-res",
@@ -194,7 +374,7 @@ class AeroCalculateAVL(BaseAeroCalculator):
                 try:
                     pos_key = avl_compute_data.index(key, pos_res)
                     pos_eq = avl_compute_data.index("=", pos_key)
-                    value = float(avl_compute_data[pos_eq + 1 : pos_eq + 12])
+                    value = float(avl_compute_data[pos_eq + 1: pos_eq + 12])
                     self.raw_parameters[i][name] = value
                 except ValueError:
                     self.raw_parameters[i][name] = numpy.nan
@@ -215,11 +395,51 @@ class AeroCalculateAVL(BaseAeroCalculator):
             )
 
     def __remove_temp_dir(self):
+        """
+        Remove the temporary directory.
+
+        If the `remove_temp_directory` attribute is set to True, then the function removes the temporary directory specified by the `working_directory` attribute. If the `remove_temp_directory` attribute is set to False, the function does nothing.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
+
+        Raises
+        ------
+        None
+        """
         if self.remove_temp_directory is True:
             shutil.rmtree(self.working_directory, ignore_errors=True)
 
     def __split_job_cpus(self, iterable):
         # splits a list of run cases according to number of available CPU cores
+        """
+        Split an iterable into chunks based on the number of available CPU cores.
+
+        Parameters
+        ----------
+        iterable : iterable
+            An iterable object to be split into chunks.
+
+        Returns
+        -------
+        itertools.zip_longest
+            An iterator that yields tuples of values, where each tuple contains the elements from the input iterable divided into chunks.
+
+        Raises
+        ------
+        None
+
+        Notes
+        -----
+        This function splits the input iterable into chunks of size (n_cores - 1) using itertools.zip_longest.
+        The fillvalue parameter is set to None, so if the length of the input iterable is not divisible by (n_cores - 1),
+        the last chunk will be padded with None values.
+        """
         return itertools.zip_longest(
             *[iter(iterable)] * (self.n_cores - 1), fillvalue=None
         )
@@ -227,6 +447,22 @@ class AeroCalculateAVL(BaseAeroCalculator):
     def __compute_avl_single(self):
         # single-threaded AVL computation
 
+        """
+        Compute AVL analysis results for a given airplane configuration.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        str
+            The processed AVL analysis output.
+
+        Raises
+        ------
+        None
+        """
         command = f"{self.avl_command} airplane.avl"
         results = ""
 
@@ -280,6 +516,31 @@ class AeroCalculateAVL(BaseAeroCalculator):
     def __compute_avl_multi(self):
         # multi-core AVL computation
 
+        """
+        Compute the aerodynamic performance of an airplane using AVL.
+
+        This method runs AVL for each set of input run data stored in `self.run_data`.
+        It generates an AVL run file for each run, writes it to a file, and then runs AVL using the generated run file.
+        The output of each run is captured and stored in `results`. If `self.debug` is True,
+        all the results are saved in a file named `avl_results_all.txt`.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        avl_compute_data : str
+            The processed output data from AVL.
+
+        Raises
+        ------
+        None
+
+        Note
+        ----
+        This method is a private method and should not be called directly.
+        """
         results = ""
         commands = []
 
@@ -331,6 +592,24 @@ class AeroCalculateAVL(BaseAeroCalculator):
         )
 
     def compute_aero(self):
+        """
+        Compute the aerodynamic properties of an aircraft.
+
+        This function calculates the aerodynamic properties of an aircraft based on its geometric inputs and flight conditions.
+
+        Parameters
+        ----------
+        self : object
+            The instance object of the class.
+
+        Returns
+        -------
+        None
+
+        Raises
+        ------
+        None
+        """
         if self.option_optimization is True and self.geom_in.asb_aircraft_geometry:
             # Update the flight vehicle geometry (useful when this is changing due to optimization)
             self.asb_geometry_internal = self.geom_in.asb_aircraft_geometry

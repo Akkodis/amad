@@ -5,6 +5,14 @@ from amad.disciplines.mass.systems import SystemsMass
 
 
 def system_mass():
+    """
+    Calculate the system mass based on input values.
+
+    Returns
+    -------
+    sysm : SystemsMass
+        The system mass object containing the calculated mass information.
+    """
     filename = r"amad/disciplines/mass/systems/tests/system_inputs.csv"
     pfp = CSVFileProcess(file_name_path=filename)
     input_definition = pfp.read_parameters(
@@ -39,6 +47,22 @@ def system_mass():
     ],
 )
 def test_system_mass_run_once(calc_mass, expected_sys_mass):
+    """
+    Test function for the `system_mass` function.
+
+    Parameters
+    ----------
+    calc_mass : str
+        The name of the system to calculate the mass for.
+
+    expected_sys_mass : float
+        The expected mass of the system.
+
+    Raises
+    ------
+    AssertionError
+        If the calculated mass does not match the expected mass.
+    """
     sysm = system_mass()
     sysm.run_once()
     assert lb2kg(sysm.model[calc_mass]) == pytest.approx(expected_sys_mass, rel=1e-8)

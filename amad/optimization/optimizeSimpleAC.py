@@ -6,8 +6,95 @@ from amad.disciplines.systems.fuel.systems.fuelVolume import FuelVolume_Weight
 
 
 class OptimizeSimpleAC(System):
+    """
+    A class representing an optimization problem for an aircraft.
+
+    Parameters
+    ----------
+    wingweight : WingMassSimpleAC
+        The component for estimating the weight of the wing.
+    drag : Drag
+        The component for estimating the drag of the aircraft.
+    fuelvol : FuelVolume_Weight
+        The component for estimating the volume and weight of fuel.
+    W_0 : float
+        The aircraft's empty weight excluding the wing.
+    rho : float
+        The density of air.
+    V_min : float
+        The takeoff speed.
+    C_Lmax : float
+        The stall lift coefficient.
+    TSFC : float
+        The thrust-specific fuel consumption.
+    Range : float
+        The aircraft's range.
+
+    Attributes
+    ----------
+    Lift_CR : float
+        The lift force required during cruising.
+    Lift_TO : float
+        The lift force required during takeoff.
+    T_flight : float
+        The flight time.
+
+    Methods
+    -------
+    setup()
+        Sets up the optimization problem by adding necessary components and variables.
+    compute()
+        Computes the values of the attributes using the input parameters.
+    """
     def setup(self):
         # add subsystems
+        """
+        Set up the calculations for an aircraft design.
+
+        Parameters
+        ----------
+        self : object
+            The current instance of the class.
+
+        Returns
+        -------
+        None
+
+        Raises
+        ------
+        None
+
+        Attributes
+        ----------
+        wingweight : WingMassSimpleAC instance
+            Child component responsible for calculating the wing weight.
+        drag : Drag instance
+            Child component responsible for calculating the drag.
+        fuelvol : FuelVolume_Weight instance
+            Child component responsible for calculating the fuel volume and weight.
+        W_0 : float
+            The aircraft empty weight excluding wing, in Newtons.
+        rho : float
+            The density of air, in kg/m^3.
+        V_min : float
+            The takeoff speed, in m/s.
+        C_Lmax : float
+            The stall CL.
+        TSFC : float
+            The thrust specific fuel consumption, in 1/sec.
+        Range : float
+            The aircraft range.
+        Lift_CR : float
+            The lift for cruise.
+        Lift_TO : float
+            The lift for takeoff.
+        T_flight : float
+            The flight time.
+
+        Notes
+        -----
+        This function sets up the necessary calculations and assigns child components and attributes for the aircraft design calculations.
+        """
         self.add_child(
             WingMassSimpleAC("wingweight"), pulling=["S", "V_f_fuse", "W", "AR"]
         )
@@ -34,6 +121,39 @@ class OptimizeSimpleAC(System):
         self.add_outward("T_flight")
 
     def compute(self):
+        """
+        Compute the lift and thrust values for a given flight.
+
+        Parameters
+        ----------
+        rho : float
+            The air density.
+        S : float
+            The wing area.
+        C_L : float
+            The lift coefficient.
+        C_Lmax : float
+            The maximum lift coefficient.
+        V : float
+            The velocity.
+        V_min : float
+            The minimum velocity.
+        Range : float
+            The distance of the flight.
+
+        Returns
+        -------
+        None
+
+        Notes
+        -----
+        The lift values are calculated using the formula
+        Lift = 0.5 * rho * S * C_L * V^2 and Lift_TO = 0.5 * rho * S * C_Lmax * V_min^2,
+        where rho is the air density, S is the wing area, C_L is the lift coefficient,
+        C_Lmax is the maximum lift coefficient, V is the velocity, and V_min is the minimum velocity.
+
+        The thrust value is calculated using the formula T_flight = Range / V, where Range is the distance of the flight and V is the velocity.
+        """
         self.Lift_CR = 0.5 * self.rho * self.S * self.C_L * (self.V**2)
         self.Lift_TO = 0.5 * self.rho * self.S * self.C_Lmax * (self.V_min**2)
         self.T_flight = self.Range / self.V

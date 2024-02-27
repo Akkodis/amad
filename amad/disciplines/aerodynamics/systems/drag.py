@@ -10,6 +10,79 @@ class Drag(System):
 
     def setup(self):
         # force 'port'
+        """
+        Set up the inputs and outputs for the function.
+
+        Parameters
+        ----------
+        self : object
+            The instance of the class.
+
+        Returns
+        -------
+        None
+
+        Outputs
+        -------
+        total : ForcePort
+            The total force output.
+
+        Re : float
+            The Reynolds number.
+
+        C_f : float
+            The skin friction coefficient.
+
+        CDA0 : float
+            The zero drag coefficient times the projected area.
+
+        C_D_fuse : float
+            The drag coefficient of the fuselage.
+
+        C_D_wpar : float
+            The drag coefficient of the wing parasite.
+
+        C_D_ind : float
+            The drag coefficient of the induced drag.
+
+        C_D : float
+            The total drag coefficient.
+
+        Inputs
+        ------
+        S : float
+            Wing surface area.
+
+        V : float
+            Cruise speed in meters per second.
+
+        AR : float
+            Aspect ratio.
+
+        V_f_fuse : float
+            Fuel volume in the fuselage in cubic meters.
+
+        C_L : float
+            Lift coefficient.
+
+        rho : float
+            Density of air in kilograms per cubic meter.
+
+        mu : float
+            Air viscosity in kilograms per meter per second.
+
+        g : float
+            Gravitational acceleration in meters per second squared.
+
+        k : float
+            Form factor.
+
+        S_wetratio : float
+            Wetted area ratio.
+
+        e : float
+            Oswald efficiency factor.
+        """
         self.add_output(ForcePort, "total")
 
         # free variables
@@ -38,6 +111,23 @@ class Drag(System):
 
     def compute(self):
         # compute variables
+        """
+        Compute the total force on a vehicle.
+
+        This function calculates the total force acting on a vehicle based on various parameters.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
+
+        Raises
+        ------
+        None
+        """
         self.Re = (self.rho / self.mu) * self.V * (self.S / self.AR) ** 0.5
         self.C_f = 0.074 / self.Re**0.2
 

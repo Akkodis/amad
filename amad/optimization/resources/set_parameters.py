@@ -4,6 +4,25 @@ from amad.disciplines.design.resources.nacelle_geoms import modern_nacelle
 
 
 def apply_parameters(parameter_dict, cosapp_system):
+    """
+    Apply parameters from a dictionary to a COSAPP system.
+
+    Parameters
+    ----------
+    parameter_dict : dict
+        A dictionary containing parameter names and their corresponding values.
+    cosapp_system : COSAPPSystem
+        The COSAPP system to which the parameters will be applied.
+
+    Returns
+    -------
+    COSAPPSystem
+        The COSAPP system with the applied parameters.
+
+    Raises
+    ------
+    None
+    """
     for param in parameter_dict:
         try:
             cosapp_system[param] = parameter_dict[param]
@@ -17,6 +36,23 @@ def apply_parameters(parameter_dict, cosapp_system):
 
 def single_aisle_concept(cosapp_system):
     # Geom and other params
+    """
+    Apply parameter values to the COSAPP system.
+
+    Parameters
+    ----------
+    cosapp_system : dict
+        The COSAPP system to be updated.
+
+    Returns
+    -------
+    dict
+        The updated COSAPP system.
+
+    Raises
+    ------
+    None
+    """
     parameter_dict = {
         "a_control_surfaces": 21.77,
         "a_fuselage": 465,
@@ -111,6 +147,29 @@ def single_aisle_concept(cosapp_system):
 
 def advanced_ac_concept(cosapp_system):
     # Geom and other params
+    """
+    Apply advanced aerodynamic concepts to a given COSAPP system.
+
+    Parameters
+    ----------
+    cosapp_system : object
+        The COSAPP system to be updated with the advanced concepts.
+
+    Returns
+    -------
+    object
+        The updated COSAPP system with the advanced concepts applied.
+
+    Notes
+    -----
+    This function applies advanced aerodynamic concepts to the given COSAPP system by updating its parameters based on a pre-defined dictionary of values.
+
+    The parameter_dict contains various parameters related to the COSAPP system, including nose definition, airfoils for canard,
+    horizontal tail, vertical tail, and wing, chord lengths, sweep angles, dihedral angles, number of sections, taper ratios, wing
+    and canard twist angles, and offsets.
+
+    The function creates a new COSAPP system by applying the parameter_dict values to the cosapp_system object. The updated COSAPP system is then returned.
+    """
     parameter_dict = {
         "nose_def": concept_nose(),
         "canard_airfoils": ["naca0010", "naca0010"],
