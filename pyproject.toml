@@ -30,9 +30,9 @@ dependencies = [
 
 [project.optional-dependencies] # Optional
 test = ["pytest==7.4.0"]
-doc = ["sphinx", "myst-parser", "sphinx_rtd_theme", "nbsphinx", "nbsphinx-link", "sphinx-autoapi"]
+doc = ["sphinx", "myst-parser", "sphinx_rtd_theme", "nbsphinx", "nbsphinx-link", "sphinx-autoapi", "readthedocs-sphinx-search"]
 style = ["black"]
 tests = ["amad[test]"]
-dev = ["amad[test]", "amad[doc]", "amad[style]"]
+dev = ["amad[test]", "amad[doc]", "amad[style]", "pip-tools==7.4.0"]
 all = ["amad[dev]"]
 
