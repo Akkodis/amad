@@ -149,7 +149,7 @@ pygments==2.17.2
     #   sphinx
 python-dateutil==2.8.2
     # via jupyter-client
-pywin32==306
+pywin32==306;sys_platform == 'win32'
     # via jupyter-core
 pyyaml==6.0.1
     # via
