@@ -23,13 +23,14 @@ extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.autosummary",
     "autoapi.extension",
-    "sphinx_search.extension"
+    "sphinx_search.extension",
 ]
 
 templates_path = ["_templates"]
 exclude_patterns = []
 autoapi_dirs = ["../.."]
 autoapi_ignore = ["*/conf.py", "*/test_*.py"]
+nbsphinx_allow_errors = True
 
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
